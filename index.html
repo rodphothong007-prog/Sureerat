@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORTH Dashboard (USO SHF)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome 6.5.1 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- SheetJS (xlsx) for reading/writing Excel files -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Google Fonts: Prompt & Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#1e1b4b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Prompt', 'Inter', sans-serif;
+      background-color: #090e1a;
+      background-image: 
+        linear-gradient(rgba(9, 14, 26, 0.92), rgba(9, 14, 26, 0.96)),
+        url('background.jpg');
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+    }
+
+    /* Compact & Elegant Banner Header */
+    .hero-banner-compact {
+      background-image: 
+        linear-gradient(to right, rgba(9, 14, 26, 0.92) 0%, rgba(9, 14, 26, 0.65) 45%, rgba(9, 14, 26, 0.20) 100%),
+        url('background.jpg');
+      background-size: cover;
+      background-position: center 28%;
+    }
+
+    /* Custom Glassmorphism Effect */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Drag & Drop Zone Styling */
+    .dropzone-active {
+      border-color: #6366f1 !important;
+      background-color: rgba(99, 102, 241, 0.08) !important;
+    }
+
+    /* Set Tree Connector styling */
+    .tree-connector {
+      position: relative;
+    }
+    .tree-connector::before {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: -12px;
+      bottom: 50%;
+      width: 12px;
+      border-left: 2px dashed #cbd5e1;
+      border-bottom: 2px dashed #cbd5e1;
+      border-bottom-left-radius: 6px;
+    }
+
+    /* Print styling */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .hero-banner-compact {
+        background: none !important;
+        color: #000000 !important;
+      }
+      .glass-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Animation */
+    .fade-in {
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+  <!-- COMPACT & ELEGANT HERO BANNER -->
+  <header class="hero-banner-compact text-white shadow-xl relative overflow-hidden border-b border-indigo-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 relative z-10 flex flex-col justify-between">
+      
+      <!-- Top Row: Spacer for FORTH logo on image (left) & Actions (right) -->
+      <div class="flex items-center justify-between gap-4 mb-3">
+        
+        <!-- FORTH Official Brand Logo Badge (Top-Left) -->
+        <div class="flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl shadow-lg border border-white/40 group hover:shadow-xl transition-all duration-200">
+          <img src="forth-logo.png" alt="FORTH CORPORATION Logo" class="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-105">
+          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+          <div class="hidden sm:flex flex-col justify-center text-left">
+            <span class="text-[11px] font-bold text-slate-800 tracking-tight leading-none">FORTH CORPORATION</span>
+            <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider leading-none mt-1">PUBLIC COMPANY LIMITED</span>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2 no-print">
+          <!-- Button: Open Excel Upload Modal -->
+          <button onclick="openExcelModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/30 transition-all duration-200 hover:-translate-y-0.5 border border-emerald-400/30">
+            <i class="fa-solid fa-file-excel text-sm"></i>
+            <span>อัปเดตผ่านไฟล์ Excel</span>
+          </button>
+
+          <!-- Button: Export to Excel/CSV -->
+          <button onclick="exportExcelSummaryReport()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-white border border-white/20 backdrop-blur-md shadow transition-all duration-200 hover:-translate-y-0.5">
+            <i class="fa-solid fa-file-excel text-emerald-400"></i>
+            <span>ส่งออก Excel</span>
+          </button>
+          
+          <!-- Button: Print Report (Dual Action: Direct Excel Summary Export + Options Modal) -->
+          <div class="relative inline-flex rounded-xl shadow shadow-indigo-600/30">
+            <button onclick="exportExcelSummaryReport()" title="คลิกเพื่อสรุปรายงานเป็นไฟล์ Excel ทันที" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-l-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 hover:-translate-y-0.5">
+              <i class="fa-solid fa-print"></i>
+              <span>พิมพ์รายงาน</span>
+            </button>
+            <button onclick="openReportModal()" title="ตัวเลือกพิมพ์รายงาน / สั่งพิมพ์ PDF" class="px-2.5 py-1.5 rounded-r-xl text-xs font-semibold bg-indigo-700 hover:bg-indigo-600 text-white border-l border-indigo-500/80 transition-all duration-200 hover:-translate-y-0.5">
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Title Block (Clean, Modern, Compact) -->
+      <div class="max-w-xl space-y-2">
+        
+        <!-- Badges Strip -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/25 text-blue-200 border border-blue-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-file-contract text-blue-400"></i>
+            สัญญาเลขที่ 8680228
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-calendar-check text-emerald-400"></i>
+            23 กรกฎาคม 2568
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-tower-cell text-indigo-300"></i>
+            USO SHF 
+          </span>
+          <span id="sourceBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800/70 text-amber-300 border border-amber-500/40 backdrop-blur-md">
+            <i class="fa-solid fa-database text-[9px]"></i>
+            <span id="sourceName">ข้อมูลโครงการ USO</span>
+          </span>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white leading-tight drop-shadow">
+          บัญชีรายการครุภัณฑ์
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-xs text-slate-300 leading-relaxed drop-shadow max-w-lg">
+          โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารด้วยอุปกรณ์ทวนสัญญาณผ่านคลื่นความถี่สูง (SHF) 
+          บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน) 
+        </p>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow space-y-6">
+
+    <!-- STAT CARDS (3-GRID) - ธีม ฟ้า ขาว เงิน (Blue, White, Silver) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      
+       <!-- Card 1: Manufacturer / Primary Brand (ผู้ผลิต / ตราสินค้าหลัก - HYTERA) -->
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group border border-slate-200/80 hover:border-sky-300">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-200 to-blue-600"></div>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1" id="statCard2Title">ผู้บริหารโครงการ</p>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase" id="statBrand">FORTH</span>
+            </div>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-800 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/70 shadow-sm" id="statBrandBadge">
+              <i class="fa-solid fa-shield-halved text-sky-600 text-[11px]"></i>
+              <span>มาตรฐานดิจิทัล SHF</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 p-1 bg-gradient-to-br from-sky-100 via-white to-slate-200 rounded-xl shadow-sm border border-slate-200/90 flex items-center justify-center group-hover:scale-110 group-hover:shadow-md transition-all overflow-hidden">
+            <img src="telecom-tower.jpg" alt="Telecom Tower & Equipment" class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Manufacturer / Primary Brand (ผู้ผลิต / ตราสินค้าหลัก - HYTERA) -->
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group border border-slate-200/80 hover:border-sky-300">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-200 to-blue-600"></div>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1" id="statCard2Title">ผู้ผลิต / ตราสินค้าหลัก</p>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase" id="statBrand">HUAWEI</span>
+            </div>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-800 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/70 shadow-sm" id="statBrandBadge">
+              <i class="fa-solid fa-shield-halved text-sky-600 text-[11px]"></i>
+              <span>มาตรฐานดิจิทัล SHF</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 p-1 bg-gradient-to-br from-sky-100 via-white to-slate-200 rounded-xl shadow-sm border border-slate-200/90 flex items-center justify-center group-hover:scale-110 group-hover:shadow-md transition-all overflow-hidden">
+            <img src="microwave-dish.jpg" alt="Microwave Dish" class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+       <!-- Card 3: Manufacturer / Primary Brand (ผู้ผลิต / ตราสินค้าหลัก - HYTERA) -->
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group border border-slate-200/80 hover:border-sky-300">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-200 to-blue-600"></div>
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1" id="statCard2Title">ผู้ผลิต / ตราสินค้าหลัก</p>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase" id="statBrand">HYTERA</span>
+            </div>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-800 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/70 shadow-sm" id="statBrandBadge">
+              <i class="fa-solid fa-shield-halved text-sky-600 text-[11px]"></i>
+              <span>มาตรฐานดิจิทัล SHF</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 p-1 bg-gradient-to-br from-sky-100 via-white to-slate-200 rounded-xl shadow-sm border border-slate-200/90 flex items-center justify-center group-hover:scale-110 group-hover:shadow-md transition-all overflow-hidden">
+            <img src="pt580-plus.jpg" alt="Hytera PT580 Plus" class="w-full h-full object-contain mix-blend-multiply drop-shadow-sm rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- INVENTORY TABLE / HIERARCHY SETS SECTION -->
+    <section class="glass-card rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+      
+      <!-- Toolbar: Search, Filters & Hierarchy Controls -->
+      <div class="p-5 border-b border-slate-200/80 bg-slate-50/50">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          
+          <div>
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-sitemap text-indigo-600"></i>
+              รายการครุภัณฑ์แบบจัดกลุ่มชุดหลักและชุดย่อย (Grouped Inventory)
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              แสดงรายการแยกเป็นชุดหลัก พร้อมแสดงรายการย่อยของแต่ละชุดอย่างเป็นระเบียบ
+            </p>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            
+            <!-- View Mode Switcher: Grouped vs Flat -->
+            <div class="inline-flex bg-slate-200/70 p-1 rounded-xl text-xs font-medium">
+              <button onclick="setViewMode('GROUPED')" id="btnView-GROUPED" class="px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-layer-group text-indigo-600"></i>
+                <span>มุมมองแยกชุดย่อย</span>
+              </button>
+              <button onclick="setViewMode('FLAT')" id="btnView-FLAT" class="px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-table-list"></i>
+                <span>ตารางรวมทั้งหมด</span>
+              </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="relative min-w-[220px]">
+              <input 
+                type="text" 
+                id="searchInput" 
+                oninput="handleSearch()" 
+                placeholder="ค้นหาชื่อชุด, อุปกรณ์ย่อย, S/N..." 
+                class="w-full pl-8 pr-7 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+              >
+              <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+              <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 p-0.5">
+                <i class="fa-solid fa-circle-xmark text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Fast Upload Button inside Toolbar -->
+            <button onclick="openExcelModal()" title="อัปโหลดไฟล์ Excel ใหม่" class="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors">
+              <i class="fa-solid fa-file-excel"></i>
+              <span>นำเข้า Excel</span>
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Filter & Group Toggle Actions Bar -->
+        <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pt-2.5 border-t border-slate-200/60 gap-2">
+          <div id="resultsCount">
+            กำลังแสดง <span class="font-semibold text-slate-800" id="currentCount">24</span> รายการ
+            <span id="groupCountText" class="ml-1 text-slate-400">(แยกเป็น <strong class="text-indigo-600" id="totalGroupsCount">8</strong> ชุด)</span>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <!-- Expand / Collapse All buttons (for Grouped View) -->
+            <div id="accordionControls" class="inline-flex items-center gap-1.5">
+              <button onclick="expandAllGroups(true)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors inline-flex items-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> ขยายทุกชุด
+              </button>
+              <button onclick="expandAllGroups(false)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors inline-flex items-center gap-1">
+                <i class="fa-solid fa-minus text-[10px]"></i> ย่อทุกชุด
+              </button>
+            </div>
+
+            <span id="resetBtnContainer" class="hidden">
+              <button onclick="resetToDefaultData()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold inline-flex items-center gap-1 transition-colors">
+                <i class="fa-solid fa-rotate-left"></i> คืนค่าเริ่มต้น
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: GROUPED HIERARCHICAL SETS VIEW (ACCORDION) -->
+      <div id="groupedViewContainer" class="p-4 sm:p-5 space-y-4">
+        <!-- Rendered dynamically by renderGroupedView() -->
+      </div>
+
+      <!-- VIEW 2: FLAT TABLE VIEW (ALTERNATIVE) -->
+      <div id="flatViewContainer" class="overflow-x-auto hidden">
+        <table class="w-full text-left border-collapse" id="equipmentTable">
+          <thead>
+            <tr class="bg-slate-100/80 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+              <th class="py-3 px-4 text-center w-14">ลำดับ</th>
+              <th class="py-3 px-4">ระดับ</th>
+              <th class="py-3 px-4">รายการ / สถานีติดตั้ง</th>
+              <th class="py-3 px-4">ยี่ห้อ</th>
+              <th class="py-3 px-4">รุ่น (Model)</th>
+              <th class="py-3 px-4">หมายเลขประจำเครื่อง (S/N)</th>
+              <th class="py-3 px-4 text-center no-print">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm" id="flatTableBody">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer / Summary -->
+      <div class="p-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span>- สรุปยอดบัญชีรายการครุภัณฑ์</span>
+        <span class="font-medium text-slate-700"> </span>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950/90 backdrop-blur-md text-slate-400 text-xs py-5 border-t border-slate-800 mt-auto no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div>
+        <p class="text-white font-medium">โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารด้วยอุปกรณ์ทวนสัญญาณผ่านคลื่นความถี่สูง SHF</p>
+        <p class="text-slate-500 text-xs mt-0.5">บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</p>
+      </div>
+      <div class="text-slate-500">
+        &copy; 2026 ระบบบัญชีรายการครุภัณฑ์
+      </div>
+    </div>
+  </footer>
+
+  <!-- EXCEL UPLOAD MODAL -->
+  <div id="excelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm hidden fade-in">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full border border-slate-200 overflow-hidden" onclick="event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-slate-900 to-emerald-950 text-white flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-lg">
+            <i class="fa-solid fa-file-excel"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">อัปเดตข้อมูลผ่านไฟล์ Excel</h3>
+            <p class="text-xs text-emerald-300/80">รองรับไฟล์ .xlsx, .xls และ .csv</p>
+          </div>
+        </div>
+        <button onclick="closeExcelModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-4">
+        
+        <!-- Drag and Drop Area -->
+        <div 
+          id="dropzone" 
+          onclick="document.getElementById('excelFileInput').click()"
+          class="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 bg-slate-50/70 hover:bg-emerald-50/30 group"
+        >
+          <input 
+            type="file" 
+            id="excelFileInput" 
+            accept=".xlsx, .xls, .csv" 
+            class="hidden" 
+            onchange="handleFileSelect(event)"
+          >
+          <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <p class="font-bold text-slate-800 text-sm">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+          <p class="text-xs text-slate-500 mt-1">สามารถเลือกไฟล์ Excel เช่น <span class="font-mono font-semibold text-emerald-700">5 สถานีแม่ข่ายแบบ 1 Carrier.xlsx</span></p>
+          <span class="inline-block mt-3 px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-medium shadow-sm">
+            รองรับ .XLSX / .XLS / .CSV
+          </span>
+        </div>
+
+        <!-- File status info -->
+        <div id="fileUploadStatus" class="hidden p-3 rounded-xl text-xs flex items-center justify-between border"></div>
+
+        <!-- Guidance Box -->
+        <div class="bg-blue-50/80 rounded-xl p-4 border border-blue-200/70 space-y-2 text-xs">
+          <p class="font-semibold text-blue-900 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info text-blue-600"></i>
+            คำแนะนำโครงสร้างชุดหลักและชุดย่อยใน Excel:
+          </p>
+          <p class="text-slate-600 leading-relaxed">
+            ระบบสามารถจัดกลุ่มชุดย่อยอัตโนมัติ โดยรายการที่ขึ้นต้นด้วยเครื่องหมาย <strong class="text-indigo-600">-</strong> หรือ <strong class="text-indigo-600">•</strong> หรือระบุเป็นรายการอุปกรณ์ย่อย จะถูกจัดเป็น <strong>ชุดย่อย</strong> ภายใต้ชุดหลักด้านบนให้อัตโนมัติทันที
+          </p>
+        </div>
+
+        <!-- Template download link -->
+        <div class="flex items-center justify-between text-xs pt-1">
+          <button onclick="downloadExcelTemplate()" class="text-emerald-700 hover:text-emerald-900 font-semibold inline-flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-file-arrow-down text-emerald-600"></i>
+            ดาวน์โหลดไฟล์ตัวอย่าง Excel Template (.xlsx)
+          </button>
+          <span class="text-slate-400">บันทึกข้อมูลแบบเรียลไทม์</span>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+        <button onclick="resetToDefaultData()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors">
+          คืนค่าเริ่มต้น
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeExcelModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+            ปิด
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden fade-in">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div id="modalIcon" class="p-2 rounded-lg bg-indigo-500/20 text-indigo-300">
+            <i class="fa-solid fa-microchip"></i>
+          </div>
+          <div>
+            <h3 id="modalTitle" class="text-base font-bold text-white">รายละเอียดครุภัณฑ์</h3>
+            <p id="modalCategory" class="text-xs text-slate-300">Base Station Equipment</p>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-3.5 text-sm" id="modalBody">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+        <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT / PRINT MODAL -->
+  <div id="reportModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden fade-in">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 overflow-hidden" onclick="event.stopPropagation()">
+      <!-- Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-indigo-950 via-indigo-900 to-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-lg bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+            <i class="fa-solid fa-print text-base"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">พิมพ์รายงาน / สรุปรายงาน</h3>
+            <p class="text-xs text-indigo-200">โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสาร (SHF)</p>
+          </div>
+        </div>
+        <button onclick="closeReportModal()" class="text-slate-300 hover:text-white p-1 rounded-lg transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 space-y-4 text-sm">
+        <p class="text-xs text-slate-500">เลือกรูปแบบการสรุปรายงานหรือการพิมพ์ตามที่ต้องการ:</p>
+
+        <!-- Option 1: Excel Summary Report (Featured according to user specifications) -->
+        <div onclick="exportExcelSummaryReport(); closeReportModal();" class="p-4 rounded-xl border-2 border-emerald-500/70 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 hover:border-emerald-600 transition-all cursor-pointer group shadow-sm hover:shadow-md">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-file-excel text-xl"></i>
+            </div>
+            <div class="flex-grow">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-slate-900 text-sm group-hover:text-emerald-800">
+                  สรุปรายงานเป็นไฟล์ Excel (.xlsx)
+                </h4>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300/60">แนะนำ</span>
+              </div>
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                สรุปข้อมูลตามโครงสร้าง: <strong>1. รายการชุดอุปกรณ์หลัก 2. ชุดอุปกรณ์ย่อย 3. Model 4. Serial 5. จำนวน</strong> เรียงลำดับตามข้อมูล
+              </p>
+              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 group-hover:text-emerald-800">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <span>คลิกเพื่อดาวน์โหลดไฟล์ Excel ทันที (.xlsx)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Print Page / PDF -->
+        <div onclick="closeReportModal(); setTimeout(() => window.print(), 200);" class="p-4 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-300 transition-all cursor-pointer group shadow-sm hover:shadow-md">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-print text-xl"></i>
+            </div>
+            <div class="flex-grow">
+              <h4 class="font-bold text-slate-900 text-sm group-hover:text-indigo-900">
+                พิมพ์เอกสารออกเครื่องพิมพ์ / บันทึกเป็น PDF
+              </h4>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                พิมพ์ผ่านหน้าต่างสั่งพิมพ์ของเบราว์เซอร์ (Window Print Dialog) เหมาะสำหรับการพิมพ์กระดาษ A4 หรือบันทึก PDF
+              </p>
+              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>เปิดหน้าต่างพิมพ์ (Print Dialog)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
+        <span class="text-slate-400">ระบบรายงานบัญชีครุภัณฑ์ FORTH</span>
+        <button onclick="closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-3 text-xs sm:text-sm border border-slate-700">
+    <div class="text-emerald-400 text-base" id="toastIcon">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <span id="toastMsg">คัดลอกข้อมูลเรียบร้อยแล้ว</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const defaultData = [
+      { no: '1', name: 'ชุดอุปกรณ์ระบบศูนย์ควบคุมสถานีแม่ข่าย (Base Station Switching Center)', brand: '', model: '', sn: '', qty: '' },
+      { no: '1.1', name: 'S/N ชุดควบคุมสถานีแม่ข่าย IPN  (1)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ XGN Server 7 #1', brand: 'Lenovo', model: 'ThinkSystem SR250 V3', sn: 'J902T9K3', qty: '1' },
+      { no: '', name: '- อุปกรณ์ NDB Server A #1', brand: 'Lenovo', model: 'ThinkSystem SR250 V3', sn: 'J902GKZ6', qty: '1' },
+      { no: '', name: '- อุปกรณ์ PUC Server 1 #1', brand: 'DELL', model: 'PowerEdge R550', sn: 'F80XKB4', qty: '1' },
+      { no: '', name: '- อุปกรณ์ Power Distribution Units #1', brand: '', model: '', sn: '', qty: '1' },
+      { no: '', name: '- อุปกรณ์ Grounding Bar #1', brand: '', model: '', sn: '', qty: '1' },
+      { no: '1.2', name: 'S/N ชุดควบคุมสถานีแม่ข่าย IPN (2)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ XGN Server 8', brand: 'Lenovo', model: 'ThinkSystem SR250 V3', sn: 'J902T9KB', qty: '1' },
+      { no: '', name: '- อุปกรณ์ NDB Server B', brand: 'Lenovo', model: 'ThinkSystem SR250 V3', sn: 'J902T9K6', qty: '1' },
+      { no: '', name: '- อุปกรณ์ PUC Server 2', brand: 'DELL', model: 'PowerEdge R550', sn: 'GXXWKB4', qty: '1' },
+      { no: '', name: '- อุปกรณ์ Power Distribution Units', brand: '', model: '', sn: '', qty: '1' },
+      { no: '', name: '- อุปกรณ์ Grounding Bar', brand: '', model: '', sn: '', qty: '1' },
+      { no: '2', name: 'ชุดอุปกรณ์ระบบบริหารจัดการ Software-Defined WAN (SD-WAN Controller) Network Cabinet', brand: '', model: '', sn: '', qty: '' },
+  { no: '2.1', name: 'ชุดอุปกรณ์ SD-WAN', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- TaiShan 200 Server ยี่ห้อ Huawei รุ่น 2280  (Server SD-WAN)', brand: 'Huawei', model: '2280  (Server SD-WAN)', sn: 'N02555009978', qty: '1' },
+      { no: '', name: '- TaiShan 200 Server ยี่ห้อ Huawei รุ่น 2280  (Server SD-WAN)', brand: 'Huawei', model: '2280  (Server SD-WAN)', sn: 'N02555009979', qty: '1' },
+      { no: '', name: '- TaiShan 200 Server ยี่ห้อ Huawei รุ่น 2280  (Server SD-WAN)', brand: 'Huawei', model: '2280  (Server SD-WAN)', sn: 'N02555009980', qty: '1' },
+      { no: '', name: '- TaiShan 200 Server ยี่ห้อ Huawei รุ่น 2280  (RTN)', brand: 'Huawei', model: '2280  (RTN)', sn: '1025B6610609', qty: '1' },
+      { no: '', name: '- TaiShan 200 Server ยี่ห้อ Huawei รุ่น 2280  (RTN)', brand: 'Huawei', model: '2280  (RTN)', sn: '1025B6610593', qty: '1' },
+      { no: '', name: '- L3 Switch  ยี่ห้อ Huawei รุ่น S5735-S24T4XE-V2 (RTN)', brand: 'Huawei', model: 'S5735-S24T4XE-V2 (RTN)', sn: '4E2590064452', qty: '1' },
+      { no: '', name: '- L3 Switch  ยี่ห้อ Huawei รุ่น S5735-S24T4XE-V2 (RTN)', brand: 'Huawei', model: 'S5735-S24T4XE-V2 (RTN)', sn: '4E2590064555', qty: '1' },
+      { no: '', name: '- L3 Switch  ยี่ห้อ Huawei รุ่น S5735-S24T4XE-V2 (Server SD-WAN)', brand: 'Huawei', model: 'S5735-S24T4XE-V2 (Server SD-WAN)', sn: '4E2590064562', qty: '1' },
+      { no: '', name: '- L3 Switch  ยี่ห้อ Huawei รุ่น S5735-S24T4XE-V2 (Server SD-WAN)', brand: 'Huawei', model: 'S5735-S24T4XE-V2 (Server SD-WAN)', sn: '4E2590064652', qty: '1' },
+      { no: '', name: '- Power Distribution Units', brand: '', model: '', sn: '', qty: '1' },
+      { no: '', name: '- Grounding Bar', brand: '', model: '', sn: '', qty: '1' },
+      { no: '3', name: 'ชุดอุปกรณ์สถานี Analog Gateway', brand: '', model: '', sn: '', qty: '' },
+      { no: '3.1', name: 'ที่ว่าการอำเภอห้วยกระเจา จังหวัดกาญจนบุรี', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432583L0RC030008', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100001', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710R4100002', qty: '1' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100025', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'V8ZF9J3D03Y', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113037', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113038', qty: '1' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0097', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25008A3244', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3253', qty: '1' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '2S2410008775', qty: '1' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064506', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: '2000290251925', qty: '1' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930012', qty: '1' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100127', qty: '1' },
+      { no: '3.2', name: 'ที่ว่าการอำเภอคลองลาน จังหวัดกำแพงเพชร', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432583L0RC030002', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100009', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100002', qty: '1' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100105', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'AE254000013512', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113039', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113040', qty: '1' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'K31C500825', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3242', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3251', qty: '1' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: 'ZTEEQM0R9J20414', qty: '1' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: 'E2590064631', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: 'HXBV8ZF9J3DPRY', qty: '1' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930012', qty: '1' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100129', qty: '1' },
+      { no: '3.3', name: 'ที่ว่าการอำเภอเขาสวนกวาง จังหวัดขอนแก่น', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432471L0RB000035', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100006', qty: '1' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100010', qty: '1' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100058', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'V8ZF9J3GN7Y', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113042', qty: '1' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113041', qty: '1' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0099', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3246', qty: '1' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3255', qty: '1' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '2S2610000239', qty: '1' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064741', qty: '1' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: 'AE254000013493', qty: '1' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930014', qty: '1' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100039', qty: '1' },
+      { no: '3.4', name: 'ที่ว่าการอำเภอเขาคิชฒกูฏ จังหวัดจันทบุรี', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432471L0RB000033', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RB100001', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RB100006', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100032', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'AE254000013497', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113043', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113044', qty: '' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0100', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3249', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3247', qty: '' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '2S2610000231', qty: '' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064663', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: '2000287842506', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930015', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100137', qty: '' },
+      { no: '3.5', name: 'ที่ว่าการอำเภอย่านตาขาว จังหวัดตรัง', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432471L0RB000010', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RB100004', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100008', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100157', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'AE254000013493', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113045', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113046', qty: '' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0101', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3241', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3248', qty: '' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '2S2610000224', qty: '' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064464', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: '2000289982698', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930016', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100143', qty: '' },
+      { no: '3.6', name: 'ที่ว่าการอำเภอวังน้ำเขียว จังหวัดนครราชสีมา', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432471L0RC000004', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100004', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100005', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100029', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'V8ZF9J335KY', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113047', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113048', qty: '' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0102', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25008A3252', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3256', qty: '' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '', qty: '' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064563', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: 'V8zF9J3471Y', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930017', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ10RB100136', qty: '' },
+      { no: '3.7', name: 'ที่ว่าการอำเภอหัวไทร จังหวัดนครศรีธรรมราช', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432583L0RC030003', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RB100002', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RB100008', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100117', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'V8ZF9J3471Y', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113049', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113050', qty: '' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0103', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3254', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D08A3243', qty: '' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '', qty: '' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064549', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: '2000288310987', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930018', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JLJ110RB100131', qty: '' },
+      { no: '3.8', name: 'ที่ว่าการอำเภอดงเจริญ จังหวัดพิจิตร', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '2152432471L0RC000005', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100003', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '215241502710RC100007', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '2102312ESG10RC100143', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: 'HXBV8ZF9J371FY', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113051', qty: '' },
+      { no: '', name: '- Omni Antenna SC266-HF4LDF(D00)', brand: 'Sinclair', model: 'SC266-HF4LDF', sn: 'H251113052', qty: '' },
+      { no: '', name: 'ชุดตู้ SHF Outdoor Cabinet', brand: 'FORTH', model: '', sn: '', qty: '' },
+      { no: '', name: '- SmartOne PUC gateway (DS-6610 MPUC)', brand: 'Hytera', model: 'DS-6610 MPUC', sn: 'W483UA0104', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D8A3245', qty: '' },
+      { no: '', name: '- เครื่องวิทยุสื่อสาร Mobile (MD788G VHF)', brand: 'Hytera', model: 'MD788G VHF', sn: '25D8A3250', qty: '' },
+      { no: '', name: '- Router NetEngine', brand: 'HUAWEI', model: 'AR651', sn: '2S2610000241', qty: '' },
+      { no: '', name: '- L3 Switch', brand: 'HUAWEI', model: 'S5735-S24T4XE-V2', sn: '4E2590064474', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OMX010000', sn: '2000290251391', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้า UPS ขนาด 3kVA', brand: 'SYNDOME', model: 'HE-RT-3K', sn: '250933031930019', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'HUAWEI', model: 'PI-AC B22', sn: '2102314JL10RB100138', qty: '' },
+      { no: '4', name: 'ชุดอุปกรณ์สถานีแม่ข่ายแบบ 1 Carriers ', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.1', name: 'BS หนองนกแก้ว จ.กาญจนบุรี', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.1.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.1.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.2', name: 'BS บ้านปางใหม่พัฒนา จังหวัดกำแพงเพชร', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.2.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.2.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.3', name: 'BS ศรีสุขสำราญ จังหวัดขอนแก่น', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.3.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.3.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.4', name: 'BS คลองพลู จังหวัดจันทบุรี', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.4.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.4.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.5', name: 'BS ช่อง จังหวัดตรัง', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.5.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.5.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.6', name: 'BS คลองป่าหมู จังหวัดนครราชสีมา', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.6.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.6.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.7', name: 'BS วัดบางอุดม จังหวัดนครศรีธรรมราช', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.7.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.7.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '4.8', name: 'BS วังงิ้ว จังหวัดพิจิตร', brand: '', model: '', sn: '', qty: '' },
+      { no: '4.8.1', name: 'สายอากาศแบบทิศทาง (Microwave)', brand: 'HUAWEI', model: 'A7WD09MAC-3NX', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ ODU', brand: 'HUAWEI', model: 'XMC-7G-3E', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ RTN', brand: 'HUAWEI', model: '320F OAU 2F', sn: '', qty: '' },
+      { no: '', name: '- SFP+,1310nm,10G', brand: 'HUAWEI', model: 'OSV010N03', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Tx/Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '', name: '- Omni Antenna Rx', brand: 'Sinclair', model: 'SC-488-SF1LDF(D00)', sn: '', qty: '' },
+      { no: '4.8.2', name: 'ตู้ Outdoor Cabinet', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Base station', brand: 'Hytera', model: 'DIB-R5OUTDOOR800', sn: '', qty: '' },
+      { no: '', name: '- SFP,1310nm,1.25G', brand: 'Link', model: 'UT-9125D-10', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์จ่ายกระแสไฟฟ้า (Rectifier)', brand: 'Vertiv', model: 'Netsure 2100', sn: '', qty: '' },
+      { no: '', name: '- Controller ( 3.0 1UX2U M830B )', brand: 'Vertiv', model: 'M830B', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 1 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Module Rectifier 2 (R48-1000E3)', brand: 'Vertiv', model: 'R48-1000e3', sn: '', qty: '' },
+      { no: '', name: '- Battery 48V100Ah', brand: 'Vertiv', model: 'V-LFP48-100', sn: '', qty: '' },
+      { no: '', name: '-  L3 (L3 Switch)', brand: 'Huawei', model: 'S5735-S24T4XE-V2', sn: '', qty: '' },
+      { no: '', name: '- เครื่องสำรองไฟฟ้าขนาด 3kVA', brand: 'Syndome', model: 'HE-RT-3K', sn: '', qty: '' },
+      { no: '', name: '- Power Injector', brand: 'Huawei', model: 'PI-AC B22', sn: '', qty: '' },
+      { no: '5', name: 'ชุดสถานีเครื่องวิทยุลูกข่ายชนิดประจำที่', brand: '', model: '', sn: '', qty: '' },
+      { no: '5.1', name: 'S/N เครื่องลูกข่ายชนิดประจำที่', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- แหล่งจ่ายไฟมาตรฐาน (PS16002)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- ไมโครโฟนแบบตั้งโต๊ะ (SM10A1)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ลำโพงภายนอก (SM09D2)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Battery ขนาด 12V 50AH (TDB12-50)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Antenna Sinclair (Yagi)', brand: '', model: '', sn: '', qty: '' },
+      { no: '5.2', name: 'S/N เครื่องลูกข่ายชนิดประจำที่', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- แหล่งจ่ายไฟมาตรฐาน (PS16002)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- ไมโครโฟนแบบตั้งโต๊ะ (SM10A1)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ลำโพงภายนอก (SM09D2)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Battery ขนาด 12V 50AH (TDB12-50)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Antenna Sinclair (Yagi)', brand: '', model: '', sn: '', qty: '' },
+      { no: '6', name: 'ชุดสถานีเครื่องวิทยุลูกข่ายชนิดมือถือ', brand: '', model: '', sn: '', qty: '' },
+      { no: '6.1', name: 'S/N เครื่องลูกข่ายชนิดมือถือ', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- แหล่งจ่ายไฟมาตรฐาน (PS16002)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- ไมโครโฟนแบบตั้งโต๊ะ (SM10A1)', brand: '', model: '', sn: '', qty: '' },
+      { no: '6.2', name: 'S/N เครื่องลูกข่ายชนิดมือถือ', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- แหล่งจ่ายไฟมาตรฐาน (PS16002)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- ไมโครโฟนแบบตั้งโต๊ะ (SM10A1)', brand: '', model: '', sn: '', qty: '' },
+      { no: '7', name: 'ชุดควบคุมสั่งการ Dispatcher', brand: '', model: '', sn: '', qty: '' },
+      { no: '7.1', name: '- Dispatcher Client Computer (DELL Optiplex 7080MT)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- Dispatcher Client Monitor (DELL P2219H)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์สำรองไฟฟ้าขนาด 3 kVA (SYMDOME HE-3KS)', brand: '', model: '', sn: '', qty: '' },
+      { no: '', name: '- อุปกรณ์ Switch Huawei (S5720-28p-SI)', brand: '', model: '', sn: '', qty: '' }
+    ];
+
+    let currentData = [...defaultData];
+    let viewMode = 'GROUPED'; // 'GROUPED' or 'FLAT'
+    let expandedSectionIds = new Set(); // Level 1 Section IDs
+    let expandedSubGroupIds = new Set(); // Level 2 Sub-Group IDs
+    let expandedDirectIds = new Set(); // Direct Items IDs
+    let chart1Instance = null;
+    let chart2Instance = null;
+
+    // Load Data on startup
+    function initData() {
+      const savedData = localStorage.getItem('shf_inventory_data');
+      const savedSource = localStorage.getItem('shf_inventory_source');
+      
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          // If cached data was only old dummy 24 items and no user file upload source, prefer defaultData
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            if (!savedSource && parsed.length === 24) {
+              currentData = [...defaultData];
+            } else {
+              currentData = parsed;
+              if (savedSource) {
+                updateSourceBadge(savedSource);
+              }
+            }
+          } else {
+            currentData = [...defaultData];
+          }
+        } catch(e) {
+          currentData = [...defaultData];
+        }
+      } else {
+        currentData = [...defaultData];
+      }
+      refreshDashboard();
+    }
+
+    // Reset to default USO dataset
+    function resetToDefaultData() {
+      if (confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น (USO Inventory) ใช่หรือไม่?')) {
+        localStorage.removeItem('shf_inventory_data');
+        localStorage.removeItem('shf_inventory_source');
+        currentData = [...defaultData];
+        updateSourceBadge('ระบบเริ่มต้น (USO)');
+        expandedSectionIds.clear();
+        expandedSubGroupIds.clear();
+        expandedDirectIds.clear();
+        refreshDashboard();
+        showToast('รีเซ็ตข้อมูลเป็นชุดเริ่มต้นเรียบร้อยแล้ว');
+      }
+    }
+
+    // Refresh everything
+    function refreshDashboard() {
+      const groups = groupItemsIntoSets(currentData);
+      updateStatistics(groups);
+      renderCurrentView(groups);
+      updateCharts(groups);
+    }
+
+    // ==========================================
+    // 2. INTELLIGENT 3-TIER HIERARCHY GROUPING ALGORITHM
+    // ==========================================
+    // Level 1: Main Category / Cabinet / Section (หัวข้อหลัก)
+    // Level 2: Sub-Group / Station / Control Set (หัวข้อรอง)
+    // Level 3: Equipment Items (รายการอุปกรณ์ย่อย)
+    function groupItemsIntoSets(items) {
+      const groups = [];
+      let currentL1 = null;
+      let currentL2 = null;
+      let currentSubCat = "";
+
+      items.forEach((item, index) => {
+        const rawName = String(item.name || '').trim();
+        const rawNo = String(item.no || item.rawNo || '').trim();
+        const cleanName = rawName.replace(/^[-*•↳\s]+/, '').trim();
+        const startsWithBullet = rawName.startsWith('-') || 
+                                 rawName.startsWith('*') || 
+                                 rawName.startsWith('•') || 
+                                 rawName.startsWith('↳') ||
+                                 item.isSubItem === true;
+
+        // 1. Detect Level 1: Main Category / Cabinet / Section (หัวข้อหลัก)
+        // e.g. "1", "2", "3" (pure integer, no dot), or matches "รายการอุปกรณ์ในตู้ระบบ...", "ตู้ระบบ...", "ชุดสถานี..."
+        let isL1 = false;
+        if (!startsWithBullet) {
+          if (/^[0-9]+$/.test(rawNo)) {
+            isL1 = true;
+          } else if (/^(รายการอุปกรณ์ในตู้ระบบ|ชุดสถานี|ตู้ระบบ)/.test(rawName) && !rawNo.includes('.')) {
+            isL1 = true;
+          } else if (rawName.startsWith('สถานีแม่ข่ายแบบ 1 Carrier - ') && !rawNo.includes('.')) {
+            isL1 = true;
+          }
+        }
+
+        if (isL1) {
+          currentL1 = {
+            id: 'sec-' + (groups.length + 1),
+            index: groups.length + 1,
+            no: rawNo || String(groups.length + 1),
+            title: rawName,
+            rawItem: item,
+            brand: item.brand || 'Hytera',
+            model: item.model || '',
+            sn: item.sn || '',
+            subGroups: [],
+            directItems: []
+          };
+          groups.push(currentL1);
+          currentL2 = null;
+          currentSubCat = "";
+          return;
+        }
+
+        // 2. Detect Level 2: Sub-group / Station / Control Set (หัวข้อรอง)
+        // e.g. "1.1", "1.2", "3.1", "4.1", "5.1", or "S/N ชุดควบคุม...", "ชุดควบคุมสถานีแม่ข่าย IPN", "ที่ว่าการอำเภอ...", "BS "
+        let isL2 = false;
+        if (!startsWithBullet) {
+          if (/^[0-9]+\.[0-9]+$/.test(rawNo)) {
+            isL2 = true;
+          } else if (/^(S\/N ชุดควบคุม|ชุดควบคุม|ที่ว่าการอำเภอ|BS\s)/i.test(rawName)) {
+            isL2 = true;
+          }
+        }
+
+        if (isL2) {
+          if (!currentL1) {
+            currentL1 = {
+              id: 'sec-' + (groups.length + 1),
+              index: groups.length + 1,
+              no: String(groups.length + 1),
+              title: 'หมวดอุปกรณ์ทั่วไป',
+              rawItem: item,
+              brand: item.brand || 'Hytera',
+              model: '',
+              sn: '',
+              subGroups: [],
+              directItems: []
+            };
+            groups.push(currentL1);
+          }
+          currentL2 = {
+            id: 'sub-' + currentL1.index + '-' + (currentL1.subGroups.length + 1),
+            parentSectionId: currentL1.id,
+            index: currentL1.subGroups.length + 1,
+            no: rawNo || (currentL1.no + '.' + (currentL1.subGroups.length + 1)),
+            title: rawName,
+            rawItem: item,
+            brand: item.brand || currentL1.brand || 'Hytera',
+            model: item.model || '',
+            sn: item.sn || '',
+            items: []
+          };
+          currentL1.subGroups.push(currentL2);
+          currentSubCat = "";
+          return;
+        }
+
+        // Check if sub-category divider (e.g. 4.1.1 Microwave, 4.1.2 Outdoor Cabinet)
+        if (!startsWithBullet && (/^[0-9]+\.[0-9]+\.[0-9]+/.test(rawNo) || /^(สายอากาศ|ชุดตู้ SHF|ตู้ Outdoor)/.test(rawName))) {
+          currentSubCat = rawName;
+          return;
+        }
+
+        // 3. Otherwise Level 3: Equipment Item (รายการอุปกรณ์ย่อย)
+        const itemObj = {
+          ...item,
+          name: cleanName,
+          rawName: rawName,
+          category: currentSubCat,
+          brand: (item.brand && item.brand !== '-') ? item.brand : (currentL2 && currentL2.brand && currentL2.brand !== '-' ? currentL2.brand : (currentL1 && currentL1.brand ? currentL1.brand : 'Hytera')),
+          model: (item.model && item.model !== '-') ? item.model : '-',
+          sn: (item.sn && item.sn !== '-') ? item.sn : '-',
+          qty: item.qty || '1',
+          status: item.status || 'พร้อมใช้งาน (Active)',
+          spec: item.spec || 'อุปกรณ์ในระบบเครือข่ายสื่อสารความถี่ SHF ตามสัญญา'
+        };
+
+        if (currentL2) {
+          itemObj.parentSubId = currentL2.id;
+          itemObj.itemNo = currentL2.no + '.' + (currentL2.items.length + 1);
+          currentL2.items.push(itemObj);
+        } else if (currentL1) {
+          itemObj.parentSectionId = currentL1.id;
+          itemObj.itemNo = currentL1.no + '.' + (currentL1.directItems.length + 1);
+          currentL1.directItems.push(itemObj);
+        } else {
+          // Fallback if no L1 created yet
+          currentL1 = {
+            id: 'sec-1',
+            index: 1,
+            no: '1',
+            title: 'ชุดอุปกรณ์ทั่วไป',
+            subGroups: [],
+            directItems: []
+          };
+          groups.push(currentL1);
+          itemObj.parentSectionId = currentL1.id;
+          itemObj.itemNo = '1.' + (currentL1.directItems.length + 1);
+          currentL1.directItems.push(itemObj);
+        }
+      });
+
+      // Default expand all on first load
+      if (expandedSectionIds.size === 0 && expandedSubGroupIds.size === 0) {
+        groups.forEach(g => {
+          expandedSectionIds.add(g.id);
+          expandedDirectIds.add(g.id);
+          g.subGroups.forEach(sg => expandedSubGroupIds.add(sg.id));
+        });
+      }
+
+      return groups;
+    }
+
+    // Update Statistics
+    function updateStatistics(groups) {
+      let totalEquipment = 0;
+      let totalSubGroups = 0;
+      const mainSectionsCount = groups.length;
+
+      groups.forEach(g => {
+        totalEquipment += g.directItems.length;
+        totalSubGroups += g.subGroups.length;
+        g.subGroups.forEach(sg => {
+          totalEquipment += sg.items.length;
+        });
+      });
+
+      // Brand calculation
+      const brands = {};
+      groups.forEach(g => {
+        g.directItems.forEach(it => {
+          const b = (it.brand || '').trim().toUpperCase();
+          if (b && b !== '-') brands[b] = (brands[b] || 0) + 1;
+        });
+        g.subGroups.forEach(sg => {
+          sg.items.forEach(it => {
+            const b = (it.brand || '').trim().toUpperCase();
+            if (b && b !== '-') brands[b] = (brands[b] || 0) + 1;
+          });
+        });
+      });
+      const topBrand = Object.keys(brands).sort((a,b) => brands[b] - brands[a])[0] || 'HYTERA';
+
+      document.getElementById('statTotal').textContent = totalEquipment;
+      
+      const elStatBrand = document.getElementById('statBrand');
+      if (elStatBrand) elStatBrand.textContent = topBrand;
+
+      const elStatANT = document.getElementById('statANT');
+      if (elStatANT) elStatANT.textContent = totalEquipment;
+
+      const elStatANTPercent = document.getElementById('statANTPercent');
+      if (elStatANTPercent) elStatANTPercent.textContent = `${totalEquipment} รายการอุปกรณ์ทั้งหมด`;
+
+      const elSummaryBS = document.getElementById('summaryBSCount');
+      if (elSummaryBS) elSummaryBS.textContent = `${mainSectionsCount} หมวดหลัก / ${totalSubGroups} หัวข้อรอง`;
+
+      const elSummaryANT = document.getElementById('summaryANTCount');
+      if (elSummaryANT) elSummaryANT.textContent = `${totalEquipment} รายการอุปกรณ์`;
+
+      const elCurrentCount = document.getElementById('currentCount');
+      if (elCurrentCount) elCurrentCount.textContent = totalEquipment;
+
+      const elTotalGroups = document.getElementById('totalGroupsCount');
+      if (elTotalGroups) elTotalGroups.textContent = mainSectionsCount;
+    }
+
+    // Switch View Mode: GROUPED vs FLAT
+    function setViewMode(mode) {
+      viewMode = mode;
+      const btnGrouped = document.getElementById('btnView-GROUPED');
+      const btnFlat = document.getElementById('btnView-FLAT');
+      const groupedContainer = document.getElementById('groupedViewContainer');
+      const flatContainer = document.getElementById('flatViewContainer');
+      const accordionControls = document.getElementById('accordionControls');
+      const groupCountText = document.getElementById('groupCountText');
+
+      if (mode === 'GROUPED') {
+        btnGrouped.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5";
+        btnFlat.className = "px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5";
+        groupedContainer.classList.remove('hidden');
+        flatContainer.classList.add('hidden');
+        accordionControls.classList.remove('hidden');
+        groupCountText.classList.remove('hidden');
+      } else {
+        btnFlat.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5";
+        btnGrouped.className = "px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5";
+        groupedContainer.classList.add('hidden');
+        flatContainer.classList.remove('hidden');
+        accordionControls.classList.add('hidden');
+        groupCountText.classList.add('hidden');
+      }
+
+      const groups = groupItemsIntoSets(currentData);
+      renderCurrentView(groups);
+    }
+
+    // Render Current View
+    function renderCurrentView(groups) {
+      if (viewMode === 'GROUPED') {
+        renderGroupedView(groups);
+      } else {
+        renderFlatView(currentData);
+      }
+    }
+
+    // ==========================================
+    // 3. RENDER 3-TIER GROUPED VIEW
+    // ==========================================
+    function renderGroupedView(groups) {
+      const container = document.getElementById('groupedViewContainer');
+      const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+      container.innerHTML = '';
+
+      if (groups.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-layer-group text-3xl mb-2 text-slate-300"></i>
+            <p class="font-medium text-slate-600">ไม่พบชุดข้อมูลในระบบ</p>
+          </div>
+        `;
+        return;
+      }
+
+      let visibleSections = 0;
+
+      groups.forEach((group) => {
+        // Filter logic for Level 1, Level 2, and Equipment
+        const l1Matches = group.title.toLowerCase().includes(searchVal) ||
+                          String(group.no).toLowerCase().includes(searchVal);
+
+        // Filter sub-groups
+        const matchingSubGroups = [];
+        group.subGroups.forEach(sg => {
+          const sgMatches = sg.title.toLowerCase().includes(searchVal) ||
+                            String(sg.no).toLowerCase().includes(searchVal);
+          
+          const matchingItems = sg.items.filter(it => {
+            return it.name.toLowerCase().includes(searchVal) ||
+                   (it.brand || '').toLowerCase().includes(searchVal) ||
+                   (it.model || '').toLowerCase().includes(searchVal) ||
+                   String(it.sn || '').toLowerCase().includes(searchVal);
+          });
+
+          if (!searchVal || l1Matches || sgMatches || matchingItems.length > 0) {
+            matchingSubGroups.push({
+              ...sg,
+              displayedItems: (searchVal && !l1Matches && !sgMatches) ? matchingItems : sg.items
+            });
+          }
+        });
+
+        // Filter direct items
+        const matchingDirectItems = group.directItems.filter(it => {
+          return it.name.toLowerCase().includes(searchVal) ||
+                 (it.brand || '').toLowerCase().includes(searchVal) ||
+                 (it.model || '').toLowerCase().includes(searchVal) ||
+                 String(it.sn || '').toLowerCase().includes(searchVal);
+        });
+        const displayedDirectItems = (searchVal && !l1Matches) ? matchingDirectItems : group.directItems;
+
+        // Skip section if nothing matches
+        if (searchVal && !l1Matches && matchingSubGroups.length === 0 && displayedDirectItems.length === 0) {
+          return;
+        }
+
+        visibleSections++;
+        const isSecExpanded = expandedSectionIds.has(group.id) || searchVal.length > 0;
+        
+        let totalItemsInSec = 0;
+        matchingSubGroups.forEach(sg => totalItemsInSec += sg.displayedItems.length);
+        totalItemsInSec += displayedDirectItems.length;
+
+        const secCard = document.createElement('div');
+        secCard.className = "bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden mb-5 transition-all hover:shadow-md";
+
+        secCard.innerHTML = `
+          <!-- LEVEL 1: Main Section Header (หัวข้อหลัก) -->
+          <div 
+            onclick="toggleSection('${group.id}')"
+            class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 cursor-pointer select-none group/header"
+          >
+            <div class="flex items-start sm:items-center gap-3">
+              <span class="w-9 h-9 rounded-xl bg-indigo-500/25 text-indigo-300 border border-indigo-400/40 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 sm:mt-0 shadow-sm">
+                #${group.no}
+              </span>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="font-bold text-white text-base sm:text-lg group-hover/header:text-indigo-300 transition-colors">
+                    ${group.title}
+                  </h2>
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                    หัวข้อหลัก
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-300 mt-1">
+                  ${matchingSubGroups.length > 0 ? `
+                    <span class="text-indigo-300 font-medium">
+                      <i class="fa-solid fa-layer-group text-[11px] mr-1"></i>
+                      ${matchingSubGroups.length} หัวข้อรอง
+                    </span>
+                  ` : ''}
+                  <span class="text-emerald-300 font-medium">
+                    <i class="fa-solid fa-boxes-stacked text-[11px] mr-1"></i>
+                    รวม ${totalItemsInSec} รายการอุปกรณ์
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Level 1 Header Right Badges & Toggle -->
+            <div class="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+              <span class="px-3 py-1 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                ${totalItemsInSec} รายการ
+              </span>
+              <button class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white flex items-center justify-center text-xs transition-transform duration-200">
+                <i class="fa-solid fa-chevron-down transition-transform duration-300 ${isSecExpanded ? 'rotate-180' : ''}"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- LEVEL 1 BODY (Sub-groups Container) -->
+          <div id="body-${group.id}" class="${isSecExpanded ? '' : 'hidden'} p-4 sm:p-5 space-y-4 bg-slate-50/60 border-t border-slate-200/80">
+            
+            <!-- Sub-groups (LEVEL 2: หัวข้อรอง) -->
+            ${matchingSubGroups.map((subGroup) => {
+              const isSubExpanded = expandedSubGroupIds.has(subGroup.id) || searchVal.length > 0;
+              return `
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300">
+                  <!-- Level 2 Sub-Group Header Row -->
+                  <div 
+                    onclick="toggleSubGroup('${subGroup.id}')"
+                    class="p-3.5 sm:p-4 bg-gradient-to-r from-slate-100 to-indigo-50/50 hover:from-slate-200/80 hover:to-indigo-100/60 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 cursor-pointer select-none transition-colors"
+                  >
+                    <div class="flex items-start sm:items-center gap-3">
+                      <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                        ${subGroup.no}
+                      </span>
+                      <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                          <h3 class="font-bold text-slate-900 text-sm sm:text-base">
+                            ${subGroup.title}
+                          </h3>
+                          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                            หัวข้อรอง
+                          </span>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-0.5">
+                          อุปกรณ์ในชุด: <strong class="text-indigo-600 font-semibold">${subGroup.displayedItems.length} รายการ</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action Button: ปุ่มกดแสดงรายการอุปกรณ์ -->
+                    <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                      <button 
+                        type="button"
+                        onclick="event.stopPropagation(); toggleSubGroup('${subGroup.id}')"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
+                          isSubExpanded 
+                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200' 
+                            : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50'
+                        }"
+                      >
+                        <i class="fa-solid ${isSubExpanded ? 'fa-eye-slash' : 'fa-list-check'}"></i>
+                        <span>${isSubExpanded ? 'ซ่อนรายการอุปกรณ์' : 'แสดงรายการอุปกรณ์'}</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ${isSubExpanded ? 'rotate-180' : ''}"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- LEVEL 3: Equipment Items Table (แสดงเมื่อกดปุ่ม) -->
+                  <div id="body-${subGroup.id}" class="${isSubExpanded ? '' : 'hidden'} border-t border-slate-100">
+                    ${renderEquipmentTableHtml(subGroup.displayedItems, subGroup.no)}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+
+            <!-- Direct Items (if any, e.g. SD-WAN Cabinet) -->
+            ${displayedDirectItems.length > 0 ? `
+              <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div 
+                  onclick="toggleDirectItems('${group.id}')"
+                  class="p-3.5 sm:p-4 bg-slate-100 flex items-center justify-between cursor-pointer select-none"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-lg bg-slate-700 text-white font-mono font-bold text-xs flex items-center justify-center">
+                      ${group.no}
+                    </span>
+                    <div>
+                      <h4 class="font-bold text-slate-800 text-sm">รายการอุปกรณ์ในตู้</h4>
+                      <span class="text-xs text-slate-500">รวม ${displayedDirectItems.length} รายการ</span>
+                    </div>
+                  </div>
+                  <button 
+                    type="button"
+                    onclick="event.stopPropagation(); toggleDirectItems('${group.id}')"
+                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
+                      expandedDirectIds.has(group.id) 
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200' 
+                        : 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-50'
+                    }"
+                  >
+                    <i class="fa-solid ${expandedDirectIds.has(group.id) ? 'fa-eye-slash' : 'fa-list-check'}"></i>
+                    <span>${expandedDirectIds.has(group.id) ? 'ซ่อนรายการอุปกรณ์' : 'แสดงรายการอุปกรณ์'}</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ${expandedDirectIds.has(group.id) ? 'rotate-180' : ''}"></i>
+                  </button>
+                </div>
+                <div id="body-direct-${group.id}" class="${expandedDirectIds.has(group.id) ? '' : 'hidden'} border-t border-slate-100">
+                  ${renderEquipmentTableHtml(displayedDirectItems, group.no)}
+                </div>
+              </div>
+            ` : ''}
+
+          </div>
+        `;
+
+        container.appendChild(secCard);
+      });
+
+      if (visibleSections === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-slate-400">
+            <i class="fa-solid fa-magnifying-glass text-2xl mb-1 text-slate-300"></i>
+            <p class="font-medium text-slate-600 text-sm">ไม่พบรายการครุภัณฑ์หรือชุดอุปกรณ์ที่ค้นหา</p>
+            <p class="text-xs text-slate-400 mt-0.5">ลองเปลี่ยนคำค้นหา</p>
+          </div>
+        `;
+      }
+    }
+
+    // Helper: Render Level 3 Equipment Items Table
+    function renderEquipmentTableHtml(items, parentNo) {
+      if (!items || items.length === 0) {
+        return `
+          <div class="p-4 text-center text-xs text-slate-400 italic">
+            (ไม่มีรายการอุปกรณ์ย่อยภายใต้ชุดนี้)
+          </div>
+        `;
+      }
+
+      return `
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="bg-slate-50/90 text-slate-600 font-semibold border-b border-slate-200/90 text-[11px] uppercase tracking-wider">
+                <th class="py-2.5 px-4 text-center w-16">ลำดับ</th>
+                <th class="py-2.5 px-4">รายการอุปกรณ์ย่อย (Component Description)</th>
+                <th class="py-2.5 px-4">ยี่ห้อ (Brand)</th>
+                <th class="py-2.5 px-4">รุ่น (Model)</th>
+                <th class="py-2.5 px-4">หมายเลขเครื่อง (S/N)</th>
+                <th class="py-2.5 px-4 text-center">จำนวน</th>
+                <th class="py-2.5 px-4 text-center no-print">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
+              ${items.map((it, idx) => {
+                const hasSn = it.sn && it.sn !== '-' && it.sn.trim() !== '';
+                const displayNo = it.itemNo || `${parentNo}.${idx + 1}`;
+                return `
+                  <tr class="hover:bg-indigo-50/40 transition-colors group">
+                    <td class="py-2.5 px-4 text-center font-mono text-xs text-slate-400">
+                      ${displayNo}
+                    </td>
+                    <td class="py-2.5 px-4">
+                      <div class="flex items-center gap-2">
+                        <span class="text-indigo-400 font-mono text-sm leading-none select-none">↳</span>
+                        <span class="font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                          ${it.name}
+                        </span>
+                      </div>
+                      ${it.category ? `<span class="text-[10px] text-slate-400 ml-5 block">${it.category}</span>` : ''}
+                    </td>
+                    <td class="py-2.5 px-4 text-slate-600 font-medium">
+                      ${it.brand && it.brand !== '-' ? `
+                        <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                          ${it.brand}
+                        </span>
+                      ` : '<span class="text-slate-400">-</span>'}
+                    </td>
+                    <td class="py-2.5 px-4">
+                      ${it.model && it.model !== '-' ? `
+                        <code class="bg-slate-100 text-slate-800 font-mono px-2 py-0.5 rounded border border-slate-200 text-xs">
+                          ${it.model}
+                        </code>
+                      ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
+                    </td>
+                    <td class="py-2.5 px-4">
+                      ${hasSn ? `
+                        <button 
+                          onclick="copyToClipboard('${it.sn}')" 
+                          title="คลิกเพื่อคัดลอก S/N" 
+                          class="inline-flex items-center gap-1.5 font-mono font-bold text-slate-800 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-0.5 rounded-lg border border-slate-200 transition-all text-xs group/btn"
+                        >
+                          <span>${it.sn}</span>
+                          <i class="fa-regular fa-copy text-slate-400 group-hover/btn:text-indigo-600 text-[10px]"></i>
+                        </button>
+                      ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
+                    </td>
+                    <td class="py-2.5 px-4 text-center font-medium text-slate-700">
+                      ${it.qty || '1'}
+                    </td>
+                    <td class="py-2.5 px-4 text-center no-print whitespace-nowrap">
+                      <button 
+                        onclick="openDetailModal('${hasSn ? it.sn : it.name}')" 
+                        class="px-2.5 py-0.5 text-xs font-medium text-indigo-600 hover:text-white hover:bg-indigo-600 rounded-lg border border-indigo-200 hover:border-indigo-600 transition-all"
+                      >
+                        ดูสเปก
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // Toggle Level 1 Section
+    function toggleSection(secId) {
+      if (expandedSectionIds.has(secId)) {
+        expandedSectionIds.delete(secId);
+      } else {
+        expandedSectionIds.add(secId);
+      }
+      const groups = groupItemsIntoSets(currentData);
+      renderGroupedView(groups);
+    }
+
+    // Toggle Level 2 Sub-Group (ปุ่มกดแสดงรายการอุปกรณ์)
+    function toggleSubGroup(subId) {
+      if (expandedSubGroupIds.has(subId)) {
+        expandedSubGroupIds.delete(subId);
+      } else {
+        expandedSubGroupIds.add(subId);
+      }
+      const groups = groupItemsIntoSets(currentData);
+      renderGroupedView(groups);
+    }
+
+    // Toggle Direct Items under Level 1
+    function toggleDirectItems(secId) {
+      if (expandedDirectIds.has(secId)) {
+        expandedDirectIds.delete(secId);
+      } else {
+        expandedDirectIds.add(secId);
+      }
+      const groups = groupItemsIntoSets(currentData);
+      renderGroupedView(groups);
+    }
+
+    // Expand or Collapse All Groups
+    function expandAllGroups(expand) {
+      const groups = groupItemsIntoSets(currentData);
+      if (expand) {
+        groups.forEach(g => {
+          expandedSectionIds.add(g.id);
+          expandedDirectIds.add(g.id);
+          g.subGroups.forEach(sg => expandedSubGroupIds.add(sg.id));
+        });
+      } else {
+        expandedSectionIds.clear();
+        expandedSubGroupIds.clear();
+        expandedDirectIds.clear();
+      }
+      renderGroupedView(groups);
+    }
+
+    // ==========================================
+    // 4. RENDER FLAT TABLE VIEW
+    // ==========================================
+    function renderFlatView(items) {
+      const tbody = document.getElementById('flatTableBody');
+      const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = items.filter(item => {
+        const name = (item.name || '').toLowerCase();
+        const model = (item.model || '').toLowerCase();
+        const sn = String(item.sn || '').toLowerCase();
+        const brand = (item.brand || '').toLowerCase();
+        const no = String(item.no || '').toLowerCase();
+        return name.includes(searchVal) || model.includes(searchVal) || sn.includes(searchVal) || brand.includes(searchVal) || no.includes(searchVal);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-slate-400">ไม่พบรายการที่ค้นหา</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        const rawName = String(item.name || '').trim();
+        const isSub = item.isSubItem === true || rawName.startsWith('-') || rawName.startsWith('•');
+        const cleanName = rawName.replace(/^[-*•↳\s]+/, '').trim();
+        const hasSn = item.sn && item.sn !== '-' && item.sn.trim() !== '';
+
+        const row = document.createElement('tr');
+        row.className = isSub ? "bg-slate-50/50 hover:bg-indigo-50/40 transition-colors" : "bg-white hover:bg-slate-50 transition-colors font-medium";
+        
+        row.innerHTML = `
+          <td class="py-2.5 px-4 text-center font-mono text-xs text-slate-400">${item.no || (index + 1)}</td>
+          <td class="py-2.5 px-4">
+            <span class="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-semibold ${isSub ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-indigo-50 text-indigo-700 border-indigo-200'}">
+              ${isSub ? 'อุปกรณ์ย่อย' : 'หัวข้อหลัก'}
+            </span>
+          </td>
+          <td class="py-2.5 px-4">
+            <div class="${isSub ? 'pl-3 flex items-center gap-1.5' : 'font-bold text-slate-900'}">
+              ${isSub ? '<span class="text-indigo-400 font-mono">↳</span>' : ''}
+              <span>${cleanName}</span>
+            </div>
+          </td>
+          <td class="py-2.5 px-4 text-slate-600">${item.brand || 'Hytera'}</td>
+          <td class="py-2.5 px-4"><code class="bg-slate-100 px-2 py-0.5 rounded border text-xs font-mono">${item.model || '-'}</code></td>
+          <td class="py-2.5 px-4">
+            ${hasSn ? `
+              <button onclick="copyToClipboard('${item.sn}')" class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border">
+                ${item.sn}
+              </button>
+            ` : '<span class="text-slate-400">-</span>'}
+          </td>
+          <td class="py-2.5 px-4 text-center">
+            <button onclick="openDetailModal('${hasSn ? item.sn : item.name}')" class="px-2.5 py-0.5 text-xs font-medium text-indigo-600 border border-indigo-200 rounded">
+              ดูสเปก
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Search handler
+    function handleSearch() {
+      const searchVal = document.getElementById('searchInput').value.trim();
+      document.getElementById('clearSearchBtn').classList.toggle('hidden', searchVal.length === 0);
+      const groups = groupItemsIntoSets(currentData);
+      renderCurrentView(groups);
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      handleSearch();
+      document.getElementById('searchInput').focus();
+    }
+
+    // Modal Details
+    function openDetailModal(identifier) {
+      const idStr = String(identifier || '').trim();
+      const item = currentData.find(d => String(d.sn) === idStr || String(d.name).includes(idStr));
+      if (!item) return;
+
+      const cleanTitle = (item.name || '').replace(/^[-*•↳\s]+/, '') || 'รายละเอียดอุปกรณ์';
+      document.getElementById('modalTitle').textContent = cleanTitle;
+      document.getElementById('modalCategory').textContent = `${item.no ? 'ลำดับ: ' + item.no + ' • ' : ''}รายการอุปกรณ์ในระบบ`;
+      
+      const modalIcon = document.getElementById('modalIcon');
+      modalIcon.innerHTML = '<i class="fa-solid fa-server text-lg"></i>';
+
+      const modalBody = document.getElementById('modalBody');
+      modalBody.innerHTML = `
+        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+          <div>
+            <span class="text-xs text-slate-400 block">ยี่ห้อ (Brand)</span>
+            <span class="font-semibold text-slate-800">${item.brand || 'Hytera'}</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 block">รุ่น (Model)</span>
+            <span class="font-mono font-semibold text-slate-800 text-xs">${item.model || '-'}</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 block">หมายเลขประจำเครื่อง (S/N)</span>
+            <span class="font-mono font-bold text-indigo-600 text-sm">${item.sn || '-'}</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 block">สถานะอุปกรณ์</span>
+            <span class="inline-flex items-center gap-1 text-xs text-emerald-600 font-semibold">
+              <i class="fa-solid fa-circle-check"></i> ${item.status || 'พร้อมใช้งาน'}
+            </span>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">คุณลักษณะเฉพาะ (Specification)</span>
+          <p class="text-xs text-slate-700 bg-white p-3 rounded-lg border border-slate-200 leading-relaxed">
+            ${item.spec || 'อุปกรณ์ในระบบเครือข่ายสื่อสารความถี่ SHF 800MHz ตามข้อกำหนดสัญญา'}
+          </p>
+        </div>
+
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">ข้อมูลโครงการและผู้รับสัญญา</span>
+          <div class="text-xs text-slate-600 bg-slate-100/70 p-3 rounded-lg border border-slate-200 space-y-1">
+            <p><strong>ผู้รับสัญญา:</strong> บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</p>
+            <p><strong>สัญญาเลขที่:</strong> 8680228 (ลงวันที่ 23 กรกฎาคม 2568)</p>
+            <p><strong>โครงการ:</strong> เพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารความเร็วสูง</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // 5. EXCEL IMPORT & PARSING (SheetJS)
+    // ==========================================
+    function openExcelModal() {
+      document.getElementById('excelModal').classList.remove('hidden');
+    }
+
+    function closeExcelModal() {
+      document.getElementById('excelModal').classList.add('hidden');
+    }
+
+    const dropzone = document.getElementById('dropzone');
+    if (dropzone) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dropzone-active');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dropzone-active');
+        }, false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) processExcelFile(files[0]);
+      });
+    }
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) processExcelFile(file);
+    }
+
+    function processExcelFile(file) {
+      const statusDiv = document.getElementById('fileUploadStatus');
+      statusDiv.className = "p-3 rounded-xl text-xs flex items-center justify-between border bg-blue-50 text-blue-800 border-blue-200";
+      statusDiv.innerHTML = `<span><i class="fa-solid fa-spinner fa-spin mr-1.5"></i> กำลังอ่านไฟล์: ${file.name}...</span>`;
+      statusDiv.classList.remove('hidden');
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const rawRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          if (!rawRows || rawRows.length === 0) {
+            throw new Error("ไม่พบข้อมูลในไฟล์ Excel");
+          }
+
+          const parsedItems = parseExcelRows(rawRows);
+          if (parsedItems.length === 0) {
+            throw new Error("ไม่พบแถวข้อมูลครุภัณฑ์ หรือหัวตารางไม่ตรงตามรูปแบบ");
+          }
+
+          currentData = parsedItems;
+          localStorage.setItem('shf_inventory_data', JSON.stringify(currentData));
+          localStorage.setItem('shf_inventory_source', file.name);
+          
+          updateSourceBadge(file.name);
+          expandedSectionIds.clear();
+          expandedSubGroupIds.clear();
+          expandedDirectIds.clear();
+          refreshDashboard();
+
+          statusDiv.className = "p-3 rounded-xl text-xs flex items-center justify-between border bg-emerald-50 text-emerald-800 border-emerald-200";
+          statusDiv.innerHTML = `
+            <span><i class="fa-solid fa-circle-check mr-1.5 text-emerald-600"></i> นำเข้าข้อมูลสำเร็จ: <strong>${parsedItems.length} รายการ</strong> (จัดหมวด 3 ระดับเรียบร้อย)</span>
+            <button onclick="closeExcelModal()" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-semibold">ตกลง</button>
+          `;
+
+          showToast(`อัปเดตข้อมูลสำเร็จ ${parsedItems.length} รายการ จาก Excel`);
+          setTimeout(() => closeExcelModal(), 1500);
+
+        } catch(err) {
+          statusDiv.className = "p-3 rounded-xl text-xs flex items-center justify-between border bg-rose-50 text-rose-800 border-rose-200";
+          statusDiv.innerHTML = `<span><i class="fa-solid fa-triangle-exclamation mr-1.5 text-rose-600"></i> ${err.message || 'เกิดข้อผิดพลาดในการอ่านไฟล์'}</span>`;
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Intelligent Excel Parser for 3-Tier Hierarchy
+    function parseExcelRows(rows) {
+      let headerRowIndex = -1;
+      let colMap = { no: -1, cat: -1, name: -1, brand: -1, model: -1, sn: -1, qty: -1, status: -1 };
+
+      // Search for header row
+      for (let i = 0; i < Math.min(rows.length, 15); i++) {
+        const row = rows[i];
+        if (!row || row.length === 0) continue;
+
+        row.forEach((cell, colIdx) => {
+          const text = String(cell || '').trim().toLowerCase();
+          if (text.includes('ลำดับ') || text === 'no' || text === 'no.' || text === '#') colMap.no = colIdx;
+          if (text.includes('ประเภท') || text.includes('ชนิด') || text === 'category' || text === 'type') colMap.cat = colIdx;
+          if (text.includes('รายการ') || text.includes('สถานี') || text.includes('ชื่อ') || text.includes('description') || text.includes('station') || text.includes('อุปกรณ์')) colMap.name = colIdx;
+          if (text.includes('ยี่ห้อ') || text.includes('ตราสินค้า') || text.includes('brand') || text.includes('make')) colMap.brand = colIdx;
+          if (text.includes('รุ่น') || text.includes('แบบ') || text.includes('model')) colMap.model = colIdx;
+          if (text.includes('หมายเลข') || text.includes('serial') || text.includes('s/n') || text.includes('sn') || text.includes('ซีเรียล') || text.includes('เลขประจำเครื่อง')) colMap.sn = colIdx;
+          if (text.includes('จำนวน') || text === 'qty' || text === 'quantity') colMap.qty = colIdx;
+          if (text.includes('สถานะ') || text.includes('status')) colMap.status = colIdx;
+        });
+
+        if ((colMap.sn !== -1 || colMap.name !== -1) && (colMap.model !== -1 || colMap.brand !== -1 || colMap.no !== -1)) {
+          headerRowIndex = i;
+          break;
+        }
+      }
+
+      if (headerRowIndex === -1) {
+        headerRowIndex = 0;
+        colMap = { no: 0, cat: 1, name: 1, brand: 2, model: 3, sn: 4, qty: 5, status: 6 };
+      }
+
+      const items = [];
+
+      for (let i = headerRowIndex + 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length === 0) continue;
+
+        let rawNo = colMap.no !== -1 && row[colMap.no] !== undefined && row[colMap.no] !== null ? String(row[colMap.no]).trim() : '';
+        const nameVal = colMap.name !== -1 && row[colMap.name] ? String(row[colMap.name]).trim() : '';
+        const modelVal = colMap.model !== -1 && row[colMap.model] ? String(row[colMap.model]).trim() : '';
+        let snVal = colMap.sn !== -1 && row[colMap.sn] ? String(row[colMap.sn]).trim() : '';
+        const brandVal = colMap.brand !== -1 && row[colMap.brand] ? String(row[colMap.brand]).trim() : '';
+        const qtyVal = colMap.qty !== -1 && row[colMap.qty] ? String(row[colMap.qty]).trim() : '1';
+
+        // Format decimal numbering if floating point (e.g. 1.1000000000000001 -> 1.1)
+        if (/^\d+\.\d+$/.test(rawNo)) {
+          const num = parseFloat(rawNo);
+          rawNo = String(Math.round(num * 100) / 100);
+        }
+
+        // Skip completely empty lines
+        if (!rawNo && !nameVal && !modelVal && !snVal) continue;
+
+        items.push({
+          no: rawNo,
+          name: nameVal,
+          brand: brandVal === '-' ? '' : brandVal,
+          model: modelVal === '-' ? '' : modelVal,
+          sn: snVal === '-' ? '' : snVal,
+          qty: qtyVal,
+          status: 'พร้อมใช้งาน (Active)'
+        });
+      }
+
+      return items;
+    }
+
+    // ==========================================
+    // 6. EXPORT TO EXCEL (สรุปรายงานตาม 5 หัวข้อที่ระบุ)
+    // ==========================================
+    // 1.รายการชุดอุปกรณ์หลัก 2.ชุดอุปกรณ์ย่อย 3.Model 4.Serial 5.จำนวน (เรียงลำดับตามข้อมูล)
+    function exportToCSV() {
+      exportExcelSummaryReport();
+    }
+
+    function exportExcelSummaryReport() {
+      const groups = groupItemsIntoSets(currentData);
+      
+      // Sheet 1: สรุปรายงานตามหัวข้อ (Summary Sheet strictly matching requested topics)
+      const summaryRows = [];
+      let seqNo = 1;
+
+      groups.forEach(g => {
+        const mainTitle = g.title || 'ชุดอุปกรณ์หลัก';
+
+        // 1. Traverse Sub-Groups
+        g.subGroups.forEach(sg => {
+          const sgTitle = sg.title || '';
+          sg.items.forEach(it => {
+            const subName = it.name || '';
+            const subItemDisplay = sgTitle ? `${sgTitle} : ${subName}` : subName;
+
+            summaryRows.push({
+              "ลำดับ": seqNo++,
+              "รายการชุดอุปกรณ์หลัก": mainTitle,
+              "ชุดอุปกรณ์ย่อย": subItemDisplay,
+              "Model": (it.model && it.model !== '-') ? it.model : '-',
+              "Serial": (it.sn && it.sn !== '-') ? it.sn : '-',
+              "จำนวน": it.qty ? String(it.qty).trim() : '1'
+            });
+          });
+        });
+
+        // 2. Traverse Direct Items
+        g.directItems.forEach(it => {
+          const subName = it.name || '';
+          summaryRows.push({
+            "ลำดับ": seqNo++,
+            "รายการชุดอุปกรณ์หลัก": mainTitle,
+            "ชุดอุปกรณ์ย่อย": subName,
+            "Model": (it.model && it.model !== '-') ? it.model : '-',
+            "Serial": (it.sn && it.sn !== '-') ? it.sn : '-',
+            "จำนวน": it.qty ? String(it.qty).trim() : '1'
+          });
+        });
+      });
+
+      // Sheet 2: รายละเอียดแบบแยกคอลัมน์สถานี/ชุดควบคุม (Detailed Sheet)
+      const detailedRows = [];
+      let detailSeqNo = 1;
+
+      groups.forEach(g => {
+        const mainTitle = g.title || 'ชุดอุปกรณ์หลัก';
+
+        g.subGroups.forEach(sg => {
+          const sgTitle = sg.title || '';
+          sg.items.forEach(it => {
+            detailedRows.push({
+              "ลำดับ": detailSeqNo++,
+              "รายการชุดอุปกรณ์หลัก": mainTitle,
+              "สถานี / ชุดควบคุม": sgTitle,
+              "ชุดอุปกรณ์ย่อย": it.name || '',
+              "ยี่ห้อ (Brand)": it.brand || '-',
+              "Model": (it.model && it.model !== '-') ? it.model : '-',
+              "Serial": (it.sn && it.sn !== '-') ? it.sn : '-',
+              "จำนวน": it.qty ? String(it.qty).trim() : '1'
+            });
+          });
+        });
+
+        g.directItems.forEach(it => {
+          detailedRows.push({
+            "ลำดับ": detailSeqNo++,
+            "รายการชุดอุปกรณ์หลัก": mainTitle,
+            "สถานี / ชุดควบคุม": "-",
+            "ชุดอุปกรณ์ย่อย": it.name || '',
+            "ยี่ห้อ (Brand)": it.brand || '-',
+            "Model": (it.model && it.model !== '-') ? it.model : '-',
+            "Serial": (it.sn && it.sn !== '-') ? it.sn : '-',
+            "จำนวน": it.qty ? String(it.qty).trim() : '1'
+          });
+        });
+      });
+
+      // Sheet 3: สรุปภาพรวมตามชุดอุปกรณ์หลัก (Overview Sheet)
+      const overviewRows = groups.map((g, idx) => {
+        let itemCount = 0;
+        let totalQty = 0;
+        g.subGroups.forEach(sg => {
+          itemCount += sg.items.length;
+          sg.items.forEach(it => {
+            totalQty += parseInt(it.qty || '1', 10) || 1;
+          });
+        });
+        itemCount += g.directItems.length;
+        g.directItems.forEach(it => {
+          totalQty += parseInt(it.qty || '1', 10) || 1;
+        });
+
+        return {
+          "ลำดับ": idx + 1,
+          "รายการชุดอุปกรณ์หลัก": g.title,
+          "จำนวนสถานี/ชุดย่อย": g.subGroups.length > 0 ? `${g.subGroups.length} ชุด/สถานี` : 'รวมในตู้',
+          "จำนวนรายการอุปกรณ์": `${itemCount} รายการ`,
+          "จำนวนเครื่องรวม (ชิ้น)": totalQty
+        };
+      });
+
+      const wb = XLSX.utils.book_new();
+
+      // Append Sheet 1: สรุปตามหัวข้อ (5 หัวข้อที่ระบุ)
+      const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
+      wsSummary['!cols'] = [
+        { wch: 8 },  // ลำดับ
+        { wch: 48 }, // รายการชุดอุปกรณ์หลัก
+        { wch: 56 }, // ชุดอุปกรณ์ย่อย
+        { wch: 28 }, // Model
+        { wch: 24 }, // Serial
+        { wch: 10 }  // จำนวน
+      ];
+      XLSX.utils.book_append_sheet(wb, wsSummary, "สรุปบัญชีครุภัณฑ์");
+
+      // Append Sheet 2: รายละเอียดแยกสถานี
+      const wsDetailed = XLSX.utils.json_to_sheet(detailedRows);
+      wsDetailed['!cols'] = [
+        { wch: 8 },  // ลำดับ
+        { wch: 40 }, // รายการชุดอุปกรณ์หลัก
+        { wch: 38 }, // สถานี / ชุดควบคุม
+        { wch: 38 }, // ชุดอุปกรณ์ย่อย
+        { wch: 16 }, // ยี่ห้อ
+        { wch: 28 }, // Model
+        { wch: 24 }, // Serial
+        { wch: 10 }  // จำนวน
+      ];
+      XLSX.utils.book_append_sheet(wb, wsDetailed, "รายละเอียดแยกสถานี");
+
+      // Append Sheet 3: สรุปภาพรวมตามชุดหลัก
+      const wsOverview = XLSX.utils.json_to_sheet(overviewRows);
+      wsOverview['!cols'] = [
+        { wch: 8 },  // ลำดับ
+        { wch: 50 }, // รายการชุดอุปกรณ์หลัก
+        { wch: 22 }, // จำนวนสถานี/ชุดย่อย
+        { wch: 22 }, // จำนวนรายการอุปกรณ์
+        { wch: 22 }  // จำนวนเครื่องรวม
+      ];
+      XLSX.utils.book_append_sheet(wb, wsOverview, "สรุปยอดตามชุดหลัก");
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `รายงานสรุปบัญชีครุภัณฑ์_FORTH_USO_${dateStr}.xlsx`);
+      showToast(`สรุปรายงานและส่งออกไฟล์ Excel สำเร็จ (${summaryRows.length} รายการ)`);
+    }
+
+    function openReportModal() {
+      const modal = document.getElementById('reportModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      const modal = document.getElementById('reportModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function downloadExcelTemplate() {
+      const templateRows = [
+        { "ลำดับ": "1", "รายการชุดอุปกรณ์หลัก": "ชุดอุปกรณ์ระบบศูนย์ควบคุมสถานีแม่ข่าย (BSSC)", "ชุดอุปกรณ์ย่อย": "S/N ชุดควบคุมสถานีแม่ข่าย IPN (1) : อุปกรณ์ XGN Server 7", "Model": "ThinkSystem SR250 V3", "Serial": "J902T9K3", "จำนวน": "1" },
+        { "ลำดับ": "2", "รายการชุดอุปกรณ์หลัก": "ชุดอุปกรณ์ระบบศูนย์ควบคุมสถานีแม่ข่าย (BSSC)", "ชุดอุปกรณ์ย่อย": "S/N ชุดควบคุมสถานีแม่ข่าย IPN (1) : อุปกรณ์ NDB Server A", "Model": "ThinkSystem SR250 V3", "Serial": "J902GKZ6", "จำนวน": "1" },
+        { "ลำดับ": "3", "รายการชุดอุปกรณ์หลัก": "ชุดอุปกรณ์สถานี Analog Gateway", "ชุดอุปกรณ์ย่อย": "ที่ว่าการอำเภอห้วยกระเจา : สายอากาศแบบทิศทาง (Microwave)", "Model": "A7WD09MAC-3NX", "Serial": "2152432583L0RC030008", "จำนวน": "1" },
+        { "ลำดับ": "4", "รายการชุดอุปกรณ์หลัก": "ชุดอุปกรณ์สถานี Analog Gateway", "ชุดอุปกรณ์ย่อย": "ที่ว่าการอำเภอห้วยกระเจา : อุปกรณ์ ODU", "Model": "XMC-7G-3E", "Serial": "215241502710RC100001", "จำนวน": "1" },
+        { "ลำดับ": "5", "รายการชุดอุปกรณ์หลัก": "ชุดอุปกรณ์สถานีแม่ข่ายแบบ 1 Carriers", "ชุดอุปกรณ์ย่อย": "BS หนองนกแก้ว : Base station", "Model": "DIB-R5OUTDOOR800", "Serial": "-", "จำนวน": "1" }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(templateRows);
+      ws['!cols'] = [
+        { wch: 8 },
+        { wch: 45 },
+        { wch: 55 },
+        { wch: 25 },
+        { wch: 24 },
+        { wch: 10 }
+      ];
+      XLSX.utils.book_append_sheet(wb, ws, "Template_สรุปครุภัณฑ์");
+      XLSX.writeFile(wb, "ตัวอย่างแบบฟอร์ม_สรุปบัญชีครุภัณฑ์_FORTH.xlsx");
+      showToast("ดาวน์โหลดไฟล์ตัวอย่างแบบฟอร์ม Excel เรียบร้อยแล้ว");
+    }
+
+    function copyToClipboard(text) {
+      if (!text || text === '-') return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`คัดลอกหมายเลข Serial Number: ${text} แล้ว`);
+      }).catch(() => {
+        showToast('ไม่สามารถคัดลอกข้อความได้');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Helper: Update Data Source Badge
+    function updateSourceBadge(fileName) {
+      const el = document.getElementById('statTotalBadge');
+      if (el) {
+        el.innerHTML = `
+          <i class="fa-solid fa-file-excel text-emerald-500 text-[11px]"></i>
+          <span>ที่มา: ${fileName}</span>
+        `;
+      }
+    }
+
+    window.addEventListener('click', function(e) {
+      const modal1 = document.getElementById('detailModal');
+      const modal2 = document.getElementById('excelModal');
+      const modal3 = document.getElementById('reportModal');
+      if (e.target === modal1) closeModal();
+      if (e.target === modal2) closeExcelModal();
+      if (e.target === modal3) closeReportModal();
+    });
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeExcelModal();
+        closeReportModal();
+      }
+    });
+
+    // ==========================================
+    // 7. CHARTS FUNCTION (REMOVED AS REQUESTED)
+    // ==========================================
+    function updateCharts(groups) {
+      // กราฟแสดงผลถูกนำออกตามความต้องการของผู้ใช้งาน
+    }
+
+    // Start App
+    window.addEventListener('DOMContentLoaded', () => {
+      initData();
+    });
+  </script>
+
+</body>
+</html>
