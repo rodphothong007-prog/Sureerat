@@ -74,7 +74,7 @@
       min-height: 100vh;
     }
 
-    /* Compact & Elegant Banner Header - โทน ขาว น้ำเงิน เงิน */
+    /* Compact & Elegant Banner Header - โทน ดำ น้ำเงิน เงิน */
     .hero-banner-compact {
       background-image: 
         linear-gradient(to right, rgba(8, 14, 30, 0.95) 0%, rgba(15, 23, 42, 0.75) 45%, rgba(15, 23, 42, 0.30) 100%),
@@ -179,10 +179,37 @@
 
         <!-- Quick Action Buttons: Blue, Silver, Black, White -->
         <div class="flex flex-wrap items-center gap-2 no-print">
-          <!-- Button: Open Excel Upload Modal -->
-          <button onclick="openExcelModal()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/30 transition-all duration-200 hover:-translate-y-0.5 border border-sky-400/30">
-            <i class="fa-solid fa-file-excel text-sm text-sky-100"></i>
-            <span>อัปเดตผ่านไฟล์ Excel</span>
+          <!-- Button: Google Sheets Live Sync & Direct Link -->
+          <div class="inline-flex rounded-xl shadow-md shadow-sky-600/30 overflow-hidden border border-sky-400/40 bg-slate-900/90 backdrop-blur-md">
+            <button 
+              id="btnSyncGoogleSheet"
+              onclick="syncFromGoogleSheets(true)" 
+              title="ระบบกำลังซิงค์อัตโนมัติทุก 30 วินาที (คลิกเพื่อบังคับซิงค์เดี๋ยวนี้)"
+              class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition-all duration-200"
+            >
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+              </span>
+              <i id="syncIcon" class="fa-solid fa-arrows-rotate text-xs text-sky-100"></i>
+              <span id="syncText">ซิงค์ Google Sheets อัตโนมัติ</span>
+              <span id="syncCountdown" class="text-[10px] text-sky-200 font-mono font-normal">(30s)</span>
+            </button>
+            <a 
+              href="https://docs.google.com/spreadsheets/d/1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU/edit?usp=sharing" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              title="เปิดดูและแก้ไขไฟล์ Google Sheets ต้นฉบับ (จะซิงค์มาที่นี่อัตโนมัติ)"
+              class="px-2.5 py-1.5 bg-sky-700 hover:bg-sky-600 text-sky-100 border-l border-sky-500/50 flex items-center justify-center transition-colors"
+            >
+              <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+            </a>
+          </div>
+
+          <!-- Secondary Button: Manual Excel Upload Modal -->
+          <button onclick="openExcelModal()" title="อัปโหลดไฟล์ Excel จากเครื่องคอมพิวเตอร์" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-all duration-200">
+            <i class="fa-solid fa-file-excel text-xs text-sky-400"></i>
+            <span>ไฟล์ Excel</span>
           </button>
 
           <!-- Button: Export to Excel/CSV -->
@@ -222,10 +249,10 @@
             <i class="fa-solid fa-tower-cell text-blue-300"></i>
             USO SHF 
           </span>
-          <span id="sourceBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-900/90 text-sky-300 border border-slate-700 backdrop-blur-md">
-            <i class="fa-solid fa-database text-[9px] text-sky-400"></i>
-            <span id="sourceName"> </span>
-          </span>
+          <a href="https://docs.google.com/spreadsheets/d/1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU/edit?usp=sharing" target="_blank" id="sourceBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-900/90 text-sky-300 border border-slate-700 backdrop-blur-md hover:border-sky-400 transition-colors" title="คลิกเพื่อเปิด Google Sheets">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="sourceName">ซิงค์ Google Sheets อัตโนมัติ</span>
+          </a>
         </div>
 
         <!-- Heading -->
@@ -373,12 +400,6 @@
               </button>
             </div>
 
-            <!-- Fast Upload Button inside Toolbar -->
-            <button onclick="openExcelModal()" title="อัปโหลดไฟล์ Excel ใหม่" class="no-print inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white shadow-sm shadow-sky-600/20 transition-all hover:-translate-y-0.5">
-              <i class="fa-solid fa-file-excel"></i>
-              <span>นำเข้า Excel</span>
-            </button>
-
           </div>
 
         </div>
@@ -426,7 +447,6 @@
               <th class="py-3 px-4">ยี่ห้อ</th>
               <th class="py-3 px-4">รุ่น (Model)</th>
               <th class="py-3 px-4">หมายเลขประจำเครื่อง (S/N)</th>
-              <th class="py-3 px-4 text-center no-print">จัดการ</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-sm" id="flatTableBody">
@@ -684,24 +704,19 @@
         try {
           const parsed = JSON.parse(savedData);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (!savedSource || parsed.length < defaultData.length) {
-              currentData = [...defaultData];
-              updateSourceBadge('รายการบัญชีครุภัณฑ์ USO.xlsx');
-            } else {
-              currentData = parsed;
-              updateSourceBadge(savedSource);
-            }
+            currentData = parsed;
+            updateSourceBadge(savedSource || 'ซิงค์ Google Sheets อัตโนมัติ');
           } else {
             currentData = [...defaultData];
-            updateSourceBadge('รายการบัญชีครุภัณฑ์ USO.xlsx');
+            updateSourceBadge('ซิงค์ Google Sheets อัตโนมัติ');
           }
         } catch(e) {
           currentData = [...defaultData];
-          updateSourceBadge('รายการบัญชีครุภัณฑ์ USO.xlsx');
+          updateSourceBadge('ซิงค์ Google Sheets อัตโนมัติ');
         }
       } else {
         currentData = [...defaultData];
-        updateSourceBadge('รายการบัญชีครุภัณฑ์ USO.xlsx');
+        updateSourceBadge('ซิงค์ Google Sheets อัตโนมัติ');
       }
       refreshDashboard();
     }
@@ -932,7 +947,7 @@
             id: 'sec-' + (groups.length + 1),
             index: groups.length + 1,
             no: rawNo || String(groups.length + 1),
-            title: rawName,
+            title: rawName.replace(/#/g, '').trim(),
             rawItem: item,
             brand: item.brand || 'Hytera',
             model: item.model || '',
@@ -982,7 +997,7 @@
             sectionNo: String(currentL1.no),
             index: currentL1.subGroups.length + 1,
             no: rawNo || (currentL1.no + '.' + (currentL1.subGroups.length + 1)),
-            title: rawName,
+            title: rawName.replace(/#/g, '').trim(),
             rawItem: item,
             brand: item.brand || currentL1.brand || 'Hytera',
             model: item.model || '',
@@ -1019,7 +1034,7 @@
             sectionNo: currentL1 ? String(currentL1.no) : '',
             index: currentL2.villageUnits.length + 1,
             no: rawNo || (currentL2.no + '.' + (currentL2.villageUnits.length + 1)),
-            title: vTitle,
+            title: vTitle.replace(/#/g, '').trim(),
             rawItem: item,
             items: []
           };
@@ -1641,7 +1656,6 @@
                 <th class="py-2.5 px-4">รุ่น (Model)</th>
                 <th class="py-2.5 px-4">หมายเลขเครื่อง (S/N)</th>
                 <th class="py-2.5 px-4 text-center">จำนวน</th>
-                <th class="py-2.5 px-4 text-center no-print">จัดการ</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
@@ -1690,14 +1704,6 @@
                     </td>
                     <td class="py-2.5 px-4 text-center font-medium text-slate-700">
                       ${it.qty || '1'}
-                    </td>
-                    <td class="py-2.5 px-4 text-center no-print whitespace-nowrap">
-                      <button 
-                        onclick="openDetailModal('${hasSn ? it.sn : it.name}')" 
-                        class="px-2.5 py-0.5 text-xs font-medium text-sky-700 hover:text-white hover:bg-sky-600 rounded-lg border border-sky-300 hover:border-sky-600 transition-all"
-                      >
-                        ดูสเปก
-                      </button>
                     </td>
                   </tr>
                 `;
@@ -1831,7 +1837,7 @@
       }
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-slate-400">ไม่พบรายการครุภัณฑ์ที่ค้นหา</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-400">ไม่พบรายการครุภัณฑ์ที่ค้นหา</td></tr>`;
         return;
       }
 
@@ -1840,7 +1846,7 @@
         const rawNo = String(item.no || '').trim();
         const isVil = /^[0-9]+\.[0-9]+\.[0-9]+/.test(rawNo) || rawName.startsWith('หมู่');
         const isSub = item.isSubItem === true || rawName.startsWith('-') || rawName.startsWith('•');
-        const cleanName = rawName.replace(/^[-*•↳\s]+/, '').trim() || (isVil ? `หมู่บ้าน (รหัส ${rawNo})` : '');
+        const cleanName = rawName.replace(/^[-*•↳\s]+/, '').replace(/#/g, '').trim() || (isVil ? `หมู่บ้าน (รหัส ${rawNo})` : '');
         const hasSn = item.sn && item.sn !== '-' && item.sn.trim() !== '';
 
         const row = document.createElement('tr');
@@ -1870,11 +1876,6 @@
                 ${item.sn}
               </button>
             ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
-          </td>
-          <td class="py-2.5 px-4 text-center">
-            <button onclick="openDetailModal('${hasSn ? item.sn : item.name}')" class="px-2.5 py-0.5 text-xs font-medium text-sky-700 hover:text-white hover:bg-sky-600 rounded border border-sky-300 hover:border-sky-600 transition-all">
-              ดูสเปก
-            </button>
           </td>
         `;
         tbody.appendChild(row);
@@ -2053,6 +2054,132 @@
       reader.readAsArrayBuffer(file);
     }
 
+    // ==========================================
+    // GOOGLE SHEETS LIVE AUTO-SYNC (JSONP)
+    // ==========================================
+    const GOOGLE_SHEET_ID = '1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU';
+    const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/edit?usp=sharing`;
+    const AUTO_SYNC_INTERVAL_SEC = 30;
+    let autoSyncCountdown = AUTO_SYNC_INTERVAL_SEC;
+    let isAutoSyncing = false;
+    let isInitialLoad = true;
+    let autoSyncCountdownTimer = null;
+
+    function syncFromGoogleSheets(isUserTriggered = false) {
+      if (isAutoSyncing) return;
+      isAutoSyncing = true;
+      window._lastSyncWasManual = isUserTriggered;
+
+      const syncIcon = document.getElementById('syncIcon');
+      const syncCountdown = document.getElementById('syncCountdown');
+      if (syncIcon) syncIcon.classList.add('fa-spin');
+      if (syncCountdown && isUserTriggered) syncCountdown.textContent = '(ซิงค์...)';
+
+      const oldScript = document.getElementById('gvizSyncScript');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'gvizSyncScript';
+      script.src = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=responseHandler:handleGoogleSheetSync&_t=${Date.now()}`;
+      script.onerror = function() {
+        isAutoSyncing = false;
+        if (syncIcon) syncIcon.classList.remove('fa-spin');
+        if (syncCountdown) syncCountdown.textContent = `(${autoSyncCountdown}s)`;
+        if (isUserTriggered) {
+          showToast('ไม่สามารถเชื่อมต่อ Google Sheets ได้ในขณะนี้ (ใช้ข้อมูลล่าสุดในระบบ)');
+        }
+      };
+      document.head.appendChild(script);
+    }
+
+    window.handleGoogleSheetSync = function(response) {
+      isAutoSyncing = false;
+      const syncIcon = document.getElementById('syncIcon');
+      const syncCountdown = document.getElementById('syncCountdown');
+      if (syncIcon) syncIcon.classList.remove('fa-spin');
+
+      try {
+        if (!response || !response.table || !response.table.rows) {
+          throw new Error('ไม่พบตารางข้อมูลจาก Google Sheets');
+        }
+
+        const header = response.table.cols.map(c => c ? (c.label || c.id || '') : '');
+        const rawRows = [header];
+        response.table.rows.forEach(r => {
+          if (!r || !r.c) return;
+          rawRows.push(r.c.map(cell => {
+            if (!cell) return '';
+            if (cell.v !== null && cell.v !== undefined) return String(cell.v).trim();
+            if (cell.f !== null && cell.f !== undefined) return String(cell.f).trim();
+            return '';
+          }));
+        });
+
+        const parsedItems = parseExcelRows(rawRows);
+        if (parsedItems.length === 0) {
+          throw new Error('ไม่พบแถวข้อมูลครุภัณฑ์ที่ถูกต้อง');
+        }
+
+        const prevItemsCount = currentData ? currentData.length : 0;
+        currentData = parsedItems;
+        try {
+          localStorage.setItem('shf_inventory_data', JSON.stringify(currentData));
+          localStorage.setItem('shf_inventory_source', 'ซิงค์ Google Sheets อัตโนมัติ');
+        } catch(storageErr) {
+          console.warn('LocalStorage save failed:', storageErr);
+        }
+
+        const timeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        updateSourceBadge(`ซิงค์ Google Sheets อัตโนมัติ (${timeStr})`);
+        
+        // Reset countdown timer
+        autoSyncCountdown = AUTO_SYNC_INTERVAL_SEC;
+        if (syncCountdown) syncCountdown.textContent = `(${autoSyncCountdown}s)`;
+
+        // Only clear/reset accordions on the initial fresh load; preserve user view on background sync
+        if (isInitialLoad) {
+          expandedSectionIds.clear();
+          expandedSubGroupIds.clear();
+          expandedVillageIds.clear();
+          expandedDirectIds.clear();
+          isInitialLoad = false;
+        }
+
+        refreshDashboard();
+
+        if (window._lastSyncWasManual) {
+          showToast(`ซิงค์ข้อมูล Google Sheets สำเร็จ ${parsedItems.length.toLocaleString()} รายการ (${timeStr})`);
+          window._lastSyncWasManual = false;
+        } else if (prevItemsCount > 0 && prevItemsCount !== parsedItems.length) {
+          showToast(`อัปเดตข้อมูลจาก Google Sheets อัตโนมัติแล้ว (${parsedItems.length.toLocaleString()} รายการ)`);
+        }
+      } catch(err) {
+        console.error('Google Sheet Sync Error:', err);
+        if (window._lastSyncWasManual) {
+          showToast('เกิดข้อผิดพลาดในการแปลงข้อมูล: ' + err.message);
+          window._lastSyncWasManual = false;
+        }
+      }
+    };
+
+    function startAutoSyncLoop() {
+      if (autoSyncCountdownTimer) clearInterval(autoSyncCountdownTimer);
+      autoSyncCountdown = AUTO_SYNC_INTERVAL_SEC;
+      autoSyncCountdownTimer = setInterval(() => {
+        if (!isAutoSyncing) {
+          autoSyncCountdown--;
+          const syncCountdown = document.getElementById('syncCountdown');
+          if (syncCountdown) {
+            syncCountdown.textContent = autoSyncCountdown > 0 ? `(${autoSyncCountdown}s)` : `(ซิงค์...)`;
+          }
+          if (autoSyncCountdown <= 0) {
+            autoSyncCountdown = AUTO_SYNC_INTERVAL_SEC;
+            syncFromGoogleSheets(false);
+          }
+        }
+      }, 1000);
+    }
+
     // Intelligent Excel Parser for 3-Tier Hierarchy
     function parseExcelRows(rows) {
       let headerRowIndex = -1;
@@ -2092,12 +2219,12 @@
         const row = rows[i];
         if (!row || row.length === 0) continue;
 
-        let rawNo = colMap.no !== -1 && row[colMap.no] !== undefined && row[colMap.no] !== null ? String(row[colMap.no]).trim() : '';
-        const nameVal = colMap.name !== -1 && row[colMap.name] ? String(row[colMap.name]).trim() : '';
-        const modelVal = colMap.model !== -1 && row[colMap.model] ? String(row[colMap.model]).trim() : '';
-        let snVal = colMap.sn !== -1 && row[colMap.sn] ? String(row[colMap.sn]).trim() : '';
-        const brandVal = colMap.brand !== -1 && row[colMap.brand] ? String(row[colMap.brand]).trim() : '';
-        const qtyVal = colMap.qty !== -1 && row[colMap.qty] ? String(row[colMap.qty]).trim() : '1';
+        let rawNo = colMap.no !== -1 && row[colMap.no] !== undefined && row[colMap.no] !== null ? String(row[colMap.no]).trim().replace(/#/g, '') : '';
+        const nameVal = colMap.name !== -1 && row[colMap.name] ? String(row[colMap.name]).trim().replace(/#/g, '') : '';
+        const modelVal = colMap.model !== -1 && row[colMap.model] ? String(row[colMap.model]).trim().replace(/#/g, '') : '';
+        let snVal = colMap.sn !== -1 && row[colMap.sn] ? String(row[colMap.sn]).trim().replace(/#/g, '') : '';
+        const brandVal = colMap.brand !== -1 && row[colMap.brand] ? String(row[colMap.brand]).trim().replace(/#/g, '') : '';
+        const qtyVal = colMap.qty !== -1 && row[colMap.qty] ? String(row[colMap.qty]).trim().replace(/#/g, '') : '1';
 
         // Format decimal numbering if floating point (e.g. 1.1000000000000001 -> 1.1)
         if (/^\d+\.\d+$/.test(rawNo)) {
@@ -2372,6 +2499,10 @@
     // Start App
     window.addEventListener('DOMContentLoaded', () => {
       initData();
+      // Auto-sync live data immediately from Google Sheets
+      syncFromGoogleSheets(false);
+      // Start real-time auto-sync loop with visible 30s countdown
+      startAutoSyncLoop();
       try {
         const params = new URLSearchParams(window.location.search);
         const view = params.get('view');
