@@ -17,17 +17,17 @@
   <!-- SheetJS (xlsx) for reading/writing Excel files -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Google Fonts: Prompt & Inter & JetBrains Mono -->
+  <!-- Google Fonts: Sarabun (Thai Sarabun) & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
   
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Prompt', 'Inter', 'sans-serif'],
+            sans: ['Sarabun', 'TH Sarabun New', 'TH Sarabun PSK', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
@@ -63,7 +63,10 @@
 
   <style>
     body {
-      font-family: 'Prompt', 'Inter', sans-serif;
+      font-family: 'Sarabun', 'TH Sarabun New', 'TH Sarabun PSK', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
       background-color: #080e1e;
       background-image: 
         linear-gradient(rgba(8, 14, 30, 0.94), rgba(15, 23, 42, 0.97)),
@@ -128,6 +131,13 @@
       border-bottom-left-radius: 6px;
     }
 
+    /* Dropdown select font size for readability */
+    select, select option, select optgroup {
+      font-family: 'Sarabun', 'TH Sarabun New', 'TH Sarabun PSK', sans-serif !important;
+      font-size: 13px !important;
+      line-height: 1.4 !important;
+    }
+
     /* Print styling */
     @media print {
       body {
@@ -168,32 +178,32 @@
       <div class="flex items-center justify-between gap-4 mb-3">
         
         <!-- FORTH Official Brand Logo Badge (Top-Left) -->
-        <div class="flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl shadow-lg border border-slate-200 group hover:shadow-xl transition-all duration-200">
-          <img src="forth-logo.png" alt="FORTH CORPORATION Logo" class="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-105">
-          <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+        <div class="flex items-center gap-3 bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg border border-slate-200 group hover:shadow-xl transition-all duration-200">
+          <img src="forth-logo.png" alt="FORTH CORPORATION Logo" class="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105">
+          <div class="h-7 w-px bg-slate-200 hidden sm:block"></div>
           <div class="hidden sm:flex flex-col justify-center text-left">
-            <span class="text-[11px] font-bold text-slate-800 tracking-tight leading-none">FORTH CORPORATION</span>
-            <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider leading-none mt-1">PUBLIC COMPANY LIMITED</span>
+            <span class="text-xs sm:text-[13px] font-bold text-slate-800 tracking-normal leading-tight">FORTH CORPORATION</span>
+            <span class="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider leading-tight mt-0.5">PUBLIC COMPANY LIMITED</span>
           </div>
         </div>
 
-        <!-- Quick Action Buttons: Blue, Silver, Black, White -->
-        <div class="flex flex-wrap items-center gap-2 no-print">
+        <!-- Quick Action Buttons: Blue, Silver, Black, White (Compact & Elegant) -->
+        <div class="flex flex-wrap items-center gap-1.5 no-print">
           <!-- Button: Google Sheets Live Sync & Direct Link -->
-          <div class="inline-flex rounded-xl shadow-md shadow-sky-600/30 overflow-hidden border border-sky-400/40 bg-slate-900/90 backdrop-blur-md">
+          <div class="inline-flex rounded-lg shadow-sm shadow-sky-600/20 overflow-hidden border border-sky-400/40 bg-slate-900/90 backdrop-blur-md">
             <button 
               id="btnSyncGoogleSheet"
               onclick="syncFromGoogleSheets(true)" 
               title="ระบบกำลังซิงค์อัตโนมัติทุก 30 วินาที (คลิกเพื่อบังคับซิงค์เดี๋ยวนี้)"
-              class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition-all duration-200"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition-all duration-200"
             >
               <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
               </span>
-              <i id="syncIcon" class="fa-solid fa-arrows-rotate text-xs text-sky-100"></i>
+              <i id="syncIcon" class="fa-solid fa-arrows-rotate text-[11px] text-sky-100"></i>
               <span id="syncText">ซิงค์ Google Sheets อัตโนมัติ</span>
-              <span id="syncCountdown" class="text-[10px] text-sky-200 font-mono font-normal">(30s)</span>
+              <span id="syncCountdown" class="text-[11px] text-sky-200 font-mono font-normal">(30s)</span>
             </button>
             <a 
               href="https://docs.google.com/spreadsheets/d/1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU/edit?usp=sharing" 
@@ -202,29 +212,29 @@
               title="เปิดดูและแก้ไขไฟล์ Google Sheets ต้นฉบับ (จะซิงค์มาที่นี่อัตโนมัติ)"
               class="px-2.5 py-1.5 bg-sky-700 hover:bg-sky-600 text-sky-100 border-l border-sky-500/50 flex items-center justify-center transition-colors"
             >
-              <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
             </a>
           </div>
 
           <!-- Secondary Button: Manual Excel Upload Modal -->
-          <button onclick="openExcelModal()" title="อัปโหลดไฟล์ Excel จากเครื่องคอมพิวเตอร์" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-all duration-200">
+          <button onclick="openExcelModal()" title="อัปโหลดไฟล์ Excel จากเครื่องคอมพิวเตอร์" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-all duration-200">
             <i class="fa-solid fa-file-excel text-xs text-sky-400"></i>
             <span>ไฟล์ Excel</span>
           </button>
 
           <!-- Button: Export to Excel/CSV -->
-          <button onclick="exportExcelSummaryReport()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-white border border-slate-700 backdrop-blur-md shadow transition-all duration-200 hover:-translate-y-0.5">
-            <i class="fa-solid fa-file-excel text-sky-400"></i>
+          <button onclick="exportExcelSummaryReport()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-white border border-slate-700 backdrop-blur-md shadow transition-all duration-200 hover:-translate-y-0.5">
+            <i class="fa-solid fa-file-excel text-xs text-sky-400"></i>
             <span>ส่งออก Excel</span>
           </button>
           
           <!-- Button: Print Report -->
-          <div class="relative inline-flex rounded-xl shadow-sm border border-slate-700 overflow-hidden">
-            <button onclick="exportExcelSummaryReport()" title="คลิกเพื่อสรุปรายงานเป็นไฟล์ Excel ทันที" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition-all duration-200">
-              <i class="fa-solid fa-print text-sky-300"></i>
+          <div class="relative inline-flex rounded-lg shadow-sm border border-slate-700 overflow-hidden">
+            <button onclick="exportExcelSummaryReport()" title="คลิกเพื่อสรุปรายงานเป็นไฟล์ Excel ทันที" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition-all duration-200">
+              <i class="fa-solid fa-print text-xs text-sky-300"></i>
               <span>พิมพ์รายงาน</span>
             </button>
-            <button onclick="openReportModal()" title="ตัวเลือกพิมพ์รายงาน / สั่งพิมพ์ PDF" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border-l border-slate-700 transition-all duration-200">
+            <button onclick="openReportModal()" title="ตัวเลือกพิมพ์รายงาน / สั่งพิมพ์ PDF" class="px-2 py-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border-l border-slate-700 transition-all duration-200">
               <i class="fa-solid fa-chevron-down text-[10px]"></i>
             </button>
           </div>
@@ -233,38 +243,42 @@
       </div>
 
       <!-- Main Title Block (Clean, Modern, Compact) -->
-      <div class="max-w-xl space-y-2">
+      <div class="max-w-full space-y-2.5">
         
         <!-- Badges Strip: Blue, Silver, Black -->
         <div class="flex flex-wrap items-center gap-2">
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/25 text-sky-200 border border-sky-400/30 backdrop-blur-md">
-            <i class="fa-solid fa-file-contract text-sky-400"></i>
+          <span class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs sm:text-[13px] font-semibold bg-sky-500/25 text-sky-200 border border-sky-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-file-contract text-sky-400 text-xs"></i>
             สัญญาเลขที่ 8680228
           </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-800/80 text-slate-200 border border-slate-600/60 backdrop-blur-md">
-            <i class="fa-solid fa-calendar-check text-slate-300"></i>
+          <span class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs sm:text-[13px] font-medium bg-slate-800/80 text-slate-200 border border-slate-600/60 backdrop-blur-md">
+            <i class="fa-solid fa-calendar-check text-slate-300 text-xs"></i>
             23 กรกฎาคม 2568
           </span>
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-600/30 text-blue-200 border border-blue-400/30 backdrop-blur-md">
-            <i class="fa-solid fa-tower-cell text-blue-300"></i>
+          <span class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs sm:text-[13px] font-medium bg-blue-600/30 text-blue-200 border border-blue-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-tower-cell text-blue-300 text-xs"></i>
             USO SHF 
           </span>
-          <a href="https://docs.google.com/spreadsheets/d/1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU/edit?usp=sharing" target="_blank" id="sourceBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-900/90 text-sky-300 border border-slate-700 backdrop-blur-md hover:border-sky-400 transition-colors" title="คลิกเพื่อเปิด Google Sheets">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <a href="https://docs.google.com/spreadsheets/d/1NZrR_0i54ynjmTmXuEgCxTsC53jDNEdSl_dYe_sc_pU/edit?usp=sharing" target="_blank" id="sourceBadge" class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs sm:text-[13px] font-semibold bg-slate-900/90 text-sky-300 border border-slate-700 backdrop-blur-md hover:border-sky-400 transition-colors" title="คลิกเพื่อเปิด Google Sheets">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="sourceName">ซิงค์ Google Sheets อัตโนมัติ</span>
           </a>
         </div>
 
         <!-- Heading -->
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white leading-tight drop-shadow">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-normal text-white leading-tight drop-shadow">
           บัญชีรายการครุภัณฑ์
         </h1>
 
-        <!-- Subtitle -->
-        <p class="text-xs text-slate-300 leading-relaxed drop-shadow max-w-lg">
-          โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารด้วยอุปกรณ์ทวนสัญญาณผ่านคลื่นความถี่สูง (SHF) 
-          บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน) 
-        </p>
+        <!-- Subtitle: Project name (Line 1) and Company name (Line 2 below) -->
+        <div class="space-y-0.5 drop-shadow max-w-full">
+          <p class="text-sm sm:text-base text-slate-200 font-medium whitespace-nowrap">
+            โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารด้วยอุปกรณ์ทวนสัญญาณผ่านคลื่นความถี่สูง (SHF)
+          </p>
+          <p class="text-xs sm:text-sm text-slate-400 whitespace-nowrap">
+            บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)
+          </p>
+        </div>
 
       </div>
 
@@ -282,12 +296,12 @@
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-300 to-blue-600"></div>
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">ผู้บริหารโครงการ</p>
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500 mb-1">ผู้บริหารโครงการ</p>
             <div class="flex items-baseline gap-2">
-              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase">FORTH</span>
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-normal uppercase">FORTH</span>
             </div>
-            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/80 shadow-sm" id="cardTotalBadge">
-              <i class="fa-solid fa-boxes-stacked text-sky-600 text-[11px]"></i>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs sm:text-sm text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-3 py-1 rounded-full font-medium border border-sky-200/80 shadow-sm" id="cardTotalBadge">
+              <i class="fa-solid fa-boxes-stacked text-sky-600 text-xs"></i>
               <span>รวมครุภัณฑ์ <strong class="text-sky-700 font-bold" id="statTotal">0</strong> รายการ</span>
             </div>
           </div>
@@ -302,12 +316,12 @@
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-300 to-blue-600"></div>
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">ผู้ผลิต / ตราสินค้าหลัก</p>
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500 mb-1">ผู้ผลิต / ตราสินค้าหลัก</p>
             <div class="flex items-baseline gap-2">
-              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase">HUAWEI</span>
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-normal uppercase">HUAWEI</span>
             </div>
-            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/80 shadow-sm">
-              <i class="fa-solid fa-shield-halved text-sky-600 text-[11px]"></i>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs sm:text-sm text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-3 py-1 rounded-full font-medium border border-sky-200/80 shadow-sm">
+              <i class="fa-solid fa-shield-halved text-sky-600 text-xs"></i>
               <span>อุปกรณ์ในระบบ <strong class="text-sky-700 font-bold" id="statCountHuawei">0</strong> รายการ</span>
             </div>
           </div>
@@ -322,12 +336,12 @@
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-slate-300 to-blue-600"></div>
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">ผู้ผลิต / ตราสินค้าหลัก</p>
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-slate-500 mb-1">ผู้ผลิต / ตราสินค้าหลัก</p>
             <div class="flex items-baseline gap-2">
-              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight uppercase">HYTERA</span>
+              <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-normal uppercase">HYTERA</span>
             </div>
-            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-2.5 py-0.5 rounded-full font-medium border border-sky-200/80 shadow-sm">
-              <i class="fa-solid fa-shield-halved text-sky-600 text-[11px]"></i>
+            <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs sm:text-sm text-sky-900 bg-gradient-to-r from-sky-50 via-white to-slate-100 px-3 py-1 rounded-full font-medium border border-sky-200/80 shadow-sm">
+              <i class="fa-solid fa-shield-halved text-sky-600 text-xs"></i>
               <span>อุปกรณ์ในระบบ <strong class="text-sky-700 font-bold" id="statCountHytera">0</strong> รายการ</span>
             </div>
           </div>
@@ -344,40 +358,38 @@
     <section class="glass-card rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
       
       <!-- Toolbar: Search, Filters & Hierarchy Controls -->
-      <div class="p-5 border-b border-slate-200/80 bg-slate-50/70">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-          
-          <div>
-            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-sitemap text-sky-600"></i>
-              รายการครุภัณฑ์แบบจัดกลุ่มชุดหลักและชุดย่อย (Grouped Inventory)
+      <div class="p-4 sm:p-5 border-b border-slate-200/80 bg-slate-50/70">
+        <!-- Row 1: Title, Description & View Mode Switcher -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3.5 border-b border-slate-200/70">
+          <div class="min-w-0">
+            <h2 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900 flex items-center gap-2 whitespace-nowrap">
+              <i class="fa-solid fa-sitemap text-sky-600 shrink-0"></i>
+              <span>รายการครุภัณฑ์แบบจัดกลุ่มชุดหลักและชุดย่อย (Grouped Inventory)</span>
             </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-              แสดงรายการแยกเป็นชุดหลัก พร้อมแสดงรายการย่อยของแต่ละชุดอย่างเป็นระเบียบ
-            </p>
           </div>
 
-          <!-- Controls -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-            
-            <!-- View Mode Switcher: Grouped vs Flat -->
-            <div class="inline-flex bg-slate-200/80 p-1 rounded-xl text-xs font-medium border border-slate-300/60">
-              <button onclick="setViewMode('GROUPED')" id="btnView-GROUPED" class="px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-layer-group text-sky-600"></i>
-                <span>มุมมองแยกชุดย่อย</span>
-              </button>
-              <button onclick="setViewMode('FLAT')" id="btnView-FLAT" class="px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-table-list"></i>
-                <span>ตารางรวมทั้งหมด</span>
-              </button>
-            </div>
+          <!-- View Mode Switcher: Grouped vs Flat -->
+          <div class="inline-flex bg-slate-200/80 p-1 rounded-xl text-xs sm:text-sm font-medium border border-slate-300/60 shrink-0 self-start lg:self-auto">
+            <button onclick="setViewMode('GROUPED')" id="btnView-GROUPED" class="px-3.5 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-layer-group text-sky-600 text-xs sm:text-sm"></i>
+              <span class="whitespace-nowrap">มุมมองแยกชุดย่อย</span>
+            </button>
+            <button onclick="setViewMode('FLAT')" id="btnView-FLAT" class="px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 font-semibold whitespace-nowrap">
+              <i class="fa-solid fa-table-list text-xs sm:text-sm"></i>
+              <span class="whitespace-nowrap">ตารางรวมทั้งหมด</span>
+            </button>
+          </div>
+        </div>
 
+        <!-- Row 2: Search Input & Filter Dropdown in Toolbar -->
+        <div class="pt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 max-w-2xl">
             <!-- Filter Dropdown in Toolbar: เลือกหมวดหรือหัวข้อย่อย -->
-            <div id="subTopicToolbarContainer" class="relative min-w-[220px] sm:min-w-[280px]">
+            <div id="subTopicToolbarContainer" class="relative flex-1 min-w-[220px] sm:min-w-[280px]">
               <select 
                 id="subTopicToolbarSelect" 
                 onchange="handleToolbarSubFilter()" 
-                class="w-full appearance-none pl-8 pr-8 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl font-semibold text-slate-700 hover:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm cursor-pointer"
+                class="w-full appearance-none pl-8 pr-8 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl font-medium text-slate-700 hover:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm cursor-pointer"
               >
                 <option value="ALL">📂 แสดงทุกหมวดหมู่และหัวข้อย่อย</option>
               </select>
@@ -386,26 +398,23 @@
             </div>
 
             <!-- Search Input -->
-            <div class="relative min-w-[220px]">
+            <div class="relative flex-1 min-w-[200px]">
               <input 
                 type="text" 
                 id="searchInput" 
                 oninput="handleSearch()" 
                 placeholder="ค้นหาชื่อชุด, อุปกรณ์ย่อย, S/N..." 
-                class="w-full pl-8 pr-7 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                class="w-full pl-8 pr-7 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm font-normal"
               >
               <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
               <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 p-0.5">
                 <i class="fa-solid fa-circle-xmark text-xs"></i>
               </button>
             </div>
-
           </div>
 
-        </div>
-
         <!-- Filter & Group Toggle Actions Bar -->
-        <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pt-2.5 border-t border-slate-200/80 gap-2">
+        <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-slate-500 pt-2.5 border-t border-slate-200/80 gap-2">
           <div id="resultsCount">
             กำลังแสดง <span class="font-semibold text-slate-800" id="currentCount">24</span> รายการ
             <span id="groupCountText" class="ml-1 text-slate-400">(แยกเป็น <strong class="text-sky-700" id="totalGroupsCount">8</strong> ชุด)</span>
@@ -414,16 +423,16 @@
           <div class="flex items-center gap-3">
             <!-- Expand / Collapse All buttons (for Grouped View) -->
             <div id="accordionControls" class="inline-flex items-center gap-1.5">
-              <button onclick="expandAllGroups(true)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors inline-flex items-center gap-1 border border-slate-200/80">
+              <button onclick="expandAllGroups(true)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs sm:text-sm transition-colors inline-flex items-center gap-1 border border-slate-200/80">
                 <i class="fa-solid fa-plus text-[10px]"></i> ขยายทุกชุด
               </button>
-              <button onclick="expandAllGroups(false)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition-colors inline-flex items-center gap-1 border border-slate-200/80">
+              <button onclick="expandAllGroups(false)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs sm:text-sm transition-colors inline-flex items-center gap-1 border border-slate-200/80">
                 <i class="fa-solid fa-minus text-[10px]"></i> ย่อทุกชุด
               </button>
             </div>
 
             <span id="resetBtnContainer" class="hidden">
-              <button onclick="resetToDefaultData()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold inline-flex items-center gap-1 transition-colors">
+              <button onclick="resetToDefaultData()" class="text-xs sm:text-sm text-rose-600 hover:text-rose-800 font-semibold inline-flex items-center gap-1 transition-colors">
                 <i class="fa-solid fa-rotate-left"></i> คืนค่าเริ่มต้น
               </button>
             </span>
@@ -440,23 +449,23 @@
       <div id="flatViewContainer" class="overflow-x-auto hidden">
         <table class="w-full text-left border-collapse" id="equipmentTable">
           <thead>
-            <tr class="bg-slate-100/80 text-slate-600 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-              <th class="py-3 px-4 text-center w-14">ลำดับ</th>
-              <th class="py-3 px-4">ระดับ</th>
-              <th class="py-3 px-4">รายการ / สถานีติดตั้ง</th>
-              <th class="py-3 px-4">ยี่ห้อ</th>
-              <th class="py-3 px-4">รุ่น (Model)</th>
-              <th class="py-3 px-4">หมายเลขประจำเครื่อง (S/N)</th>
+            <tr class="bg-slate-100/90 text-slate-700 text-xs sm:text-sm font-bold uppercase tracking-wider border-b border-slate-200">
+              <th class="py-3 px-4 text-center w-14 whitespace-nowrap">ลำดับ</th>
+              <th class="py-3 px-4 whitespace-nowrap">ระดับ</th>
+              <th class="py-3 px-4 whitespace-nowrap">รายการ / สถานีติดตั้ง</th>
+              <th class="py-3 px-4 whitespace-nowrap">ยี่ห้อ</th>
+              <th class="py-3 px-4 whitespace-nowrap">รุ่น (Model)</th>
+              <th class="py-3 px-4 whitespace-nowrap">หมายเลขประจำเครื่อง (S/N)</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 text-sm" id="flatTableBody">
+          <tbody class="divide-y divide-slate-100 text-sm sm:text-base" id="flatTableBody">
             <!-- Dynamically populated rows -->
           </tbody>
         </table>
       </div>
 
       <!-- Table Footer / Summary -->
-      <div class="p-3.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="p-3.5 bg-slate-50 border-t border-slate-200 text-xs sm:text-sm text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
         <span>- สรุปยอดบัญชีรายการครุภัณฑ์</span>
         <span class="font-medium text-slate-700"> </span>
       </div>
@@ -489,8 +498,8 @@
             <i class="fa-solid fa-file-excel"></i>
           </div>
           <div>
-            <h3 class="text-base font-bold text-white">อัปเดตข้อมูลผ่านไฟล์ Excel</h3>
-            <p class="text-xs text-sky-300/80">รองรับไฟล์ .xlsx, .xls และ .csv</p>
+            <h3 class="text-base sm:text-lg font-bold text-white">อัปเดตข้อมูลผ่านไฟล์ Excel</h3>
+            <p class="text-xs sm:text-sm text-sky-300/90">รองรับไฟล์ .xlsx, .xls และ .csv</p>
           </div>
         </div>
         <button onclick="closeExcelModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
@@ -517,18 +526,18 @@
           <div class="w-14 h-14 mx-auto rounded-full bg-sky-100 text-sky-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <p class="font-bold text-slate-800 text-sm">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
-          <p class="text-xs text-slate-500 mt-1">สามารถเลือกไฟล์ Excel เช่น <span class="font-mono font-semibold text-sky-700">รายการบัญชีครุภัณฑ์ USO.xlsx</span></p>
-          <span class="inline-block mt-3 px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-medium shadow-sm">
+          <p class="font-bold text-slate-800 text-base">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">สามารถเลือกไฟล์ Excel เช่น <span class="font-mono font-semibold text-sky-700">รายการบัญชีครุภัณฑ์ USO.xlsx</span></p>
+          <span class="inline-block mt-3 px-3 py-1 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs sm:text-sm font-medium shadow-sm">
             รองรับ .XLSX / .XLS / .CSV
           </span>
         </div>
 
         <!-- File status info -->
-        <div id="fileUploadStatus" class="hidden p-3 rounded-xl text-xs flex items-center justify-between border"></div>
+        <div id="fileUploadStatus" class="hidden p-3 rounded-xl text-xs sm:text-sm flex items-center justify-between border"></div>
 
         <!-- Guidance Box -->
-        <div class="bg-sky-50/70 rounded-xl p-4 border border-sky-200/70 space-y-2 text-xs">
+        <div class="bg-sky-50/70 rounded-xl p-4 border border-sky-200/70 space-y-2 text-xs sm:text-sm">
           <p class="font-semibold text-sky-950 flex items-center gap-1.5">
             <i class="fa-solid fa-circle-info text-sky-600"></i>
             คำแนะนำโครงสร้างชุดหลักและชุดย่อยใน Excel:
@@ -539,7 +548,7 @@
         </div>
 
         <!-- Template download link -->
-        <div class="flex items-center justify-between text-xs pt-1">
+        <div class="flex items-center justify-between text-xs sm:text-sm pt-1">
           <button onclick="downloadExcelTemplate()" class="text-sky-700 hover:text-sky-900 font-semibold inline-flex items-center gap-1.5 transition-colors">
             <i class="fa-solid fa-file-arrow-down text-sky-600"></i>
             ดาวน์โหลดไฟล์ตัวอย่าง Excel Template (.xlsx)
@@ -551,11 +560,11 @@
 
       <!-- Modal Footer -->
       <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-        <button onclick="resetToDefaultData()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors">
+        <button onclick="resetToDefaultData()" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors">
           คืนค่าเริ่มต้น
         </button>
         <div class="flex gap-2">
-          <button onclick="closeExcelModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+          <button onclick="closeExcelModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
             ปิด
           </button>
         </div>
@@ -573,8 +582,8 @@
             <i class="fa-solid fa-microchip"></i>
           </div>
           <div>
-            <h3 id="modalTitle" class="text-base font-bold text-white">รายละเอียดครุภัณฑ์</h3>
-            <p id="modalCategory" class="text-xs text-slate-300">Base Station Equipment</p>
+            <h3 id="modalTitle" class="text-base sm:text-lg font-bold text-white">รายละเอียดครุภัณฑ์</h3>
+            <p id="modalCategory" class="text-xs sm:text-sm text-slate-300">Base Station Equipment</p>
           </div>
         </div>
         <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
@@ -582,12 +591,12 @@
         </button>
       </div>
 
-      <div class="p-5 space-y-3.5 text-sm" id="modalBody">
+      <div class="p-5 space-y-3.5 text-sm sm:text-base" id="modalBody">
         <!-- Injected dynamically -->
       </div>
 
       <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
-        <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+        <button onclick="closeModal()" class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
           ปิดหน้าต่าง
         </button>
       </div>
@@ -604,8 +613,8 @@
             <i class="fa-solid fa-print text-base"></i>
           </div>
           <div>
-            <h3 class="text-base font-bold text-white">พิมพ์รายงาน / สรุปรายงาน</h3>
-            <p class="text-xs text-slate-400">โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสาร (SHF)</p>
+            <h3 class="text-base sm:text-lg font-bold text-white">พิมพ์รายงาน / สรุปรายงาน</h3>
+            <p class="text-xs sm:text-sm text-slate-400">โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสาร (SHF)</p>
           </div>
         </div>
         <button onclick="closeReportModal()" class="text-slate-300 hover:text-white p-1 rounded-lg transition-colors">
@@ -614,8 +623,8 @@
       </div>
 
       <!-- Body -->
-      <div class="p-6 space-y-4 text-sm">
-        <p class="text-xs text-slate-500">เลือกรูปแบบการสรุปรายงานหรือการพิมพ์ตามที่ต้องการ:</p>
+      <div class="p-6 space-y-4 text-sm sm:text-base">
+        <p class="text-xs sm:text-sm text-slate-500">เลือกรูปแบบการสรุปรายงานหรือการพิมพ์ตามที่ต้องการ:</p>
 
         <!-- Option 1: Excel Summary Report (Featured according to user specifications) -->
         <div onclick="exportExcelSummaryReport(); closeReportModal();" class="p-4 rounded-xl border-2 border-sky-500/70 bg-gradient-to-br from-sky-50/60 via-white to-slate-50 hover:border-sky-600 transition-all cursor-pointer group shadow-sm hover:shadow-md">
@@ -625,15 +634,15 @@
             </div>
             <div class="flex-grow">
               <div class="flex items-center justify-between">
-                <h4 class="font-bold text-slate-900 text-sm group-hover:text-sky-800">
+                <h4 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-sky-800">
                   สรุปรายงานเป็นไฟล์ Excel (.xlsx)
                 </h4>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-100 text-sky-800 border border-sky-300/60">แนะนำ</span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-300/60">แนะนำ</span>
               </div>
-              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+              <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
                 สรุปข้อมูลตามโครงสร้าง: <strong>1. รายการชุดอุปกรณ์หลัก 2. ชุดอุปกรณ์ย่อย 3. Model 4. Serial 5. จำนวน</strong> เรียงลำดับตามข้อมูล
               </p>
-              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-sky-700 group-hover:text-sky-800">
+              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-sky-700 group-hover:text-sky-800">
                 <i class="fa-solid fa-cloud-arrow-down"></i>
                 <span>คลิกเพื่อดาวน์โหลดไฟล์ Excel ทันที (.xlsx)</span>
               </div>
@@ -648,13 +657,13 @@
               <i class="fa-solid fa-print text-xl"></i>
             </div>
             <div class="flex-grow">
-              <h4 class="font-bold text-slate-900 text-sm group-hover:text-slate-950">
+              <h4 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-slate-950">
                 พิมพ์เอกสารออกเครื่องพิมพ์ / บันทึกเป็น PDF
               </h4>
-              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+              <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                 พิมพ์ผ่านหน้าต่างสั่งพิมพ์ของเบราว์เซอร์ (Window Print Dialog) เหมาะสำหรับการพิมพ์กระดาษ A4 หรือบันทึก PDF
               </p>
-              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 group-hover:text-sky-700">
+              <div class="mt-2.5 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-sky-700">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 <span>เปิดหน้าต่างพิมพ์ (Print Dialog)</span>
               </div>
@@ -664,9 +673,9 @@
       </div>
 
       <!-- Footer -->
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs sm:text-sm">
         <span class="text-slate-400">ระบบรายงานบัญชีครุภัณฑ์ FORTH</span>
-        <button onclick="closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+        <button onclick="closeReportModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
           ปิดหน้าต่าง
         </button>
       </div>
@@ -776,7 +785,6 @@
           if (sg.villageUnits) vilCount += sg.villageUnits.length;
         });
         let titleText = g.title.replace(/^ชุดอุปกรณ์(ระบบ)?/, '').replace(/^ชุด/, '').trim();
-        if (titleText.length > 38) titleText = titleText.substring(0, 36) + '...';
         const vilText = vilCount > 0 ? ` (${vilCount} หมู่บ้าน / ${itemCount.toLocaleString()} รายการ)` : ` (${itemCount.toLocaleString()} รายการ)`;
         optionsHtml += `<option value="${g.no}">${g.no} ${titleText}${vilText}</option>`;
       });
@@ -797,7 +805,6 @@
       let optionsHtml = `<option value="ALL">📂 แสดงทุกหมวดหมู่และหัวข้อย่อย</option>`;
       groups.forEach(g => {
         let secTitle = g.title.replace(/^ชุดอุปกรณ์(ระบบ)?/, '').replace(/^ชุด/, '').trim();
-        if (secTitle.length > 28) secTitle = secTitle.substring(0, 26) + '...';
         
         let vilCount = 0;
         let totalSecItems = g.directItems.length;
@@ -814,7 +821,6 @@
             const isVil = sg.villageUnits && sg.villageUnits.length > 0;
             const countText = isVil ? `${sg.villageUnits.length} หมู่บ้าน` : `${sg.items.length} รายการ`;
             let title = sg.title.replace(/^จังหวัด/, 'จ.').trim();
-            if (title.length > 28) title = title.substring(0, 26) + '...';
             optionsHtml += `<option value="${sg.id}">${sg.no} ${title} (${countText})</option>`;
           });
           optionsHtml += `</optgroup>`;
@@ -1187,15 +1193,15 @@
       const groupCountText = document.getElementById('groupCountText');
 
       if (mode === 'GROUPED') {
-        btnGrouped.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5";
-        btnFlat.className = "px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5";
+        btnGrouped.className = "px-3.5 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5 whitespace-nowrap";
+        btnFlat.className = "px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 font-semibold whitespace-nowrap";
         groupedContainer.classList.remove('hidden');
         flatContainer.classList.add('hidden');
         accordionControls.classList.remove('hidden');
         groupCountText.classList.remove('hidden');
       } else {
-        btnFlat.className = "px-3 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5";
-        btnGrouped.className = "px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5";
+        btnFlat.className = "px-3.5 py-1.5 rounded-lg transition-all bg-white text-slate-900 shadow-sm font-semibold inline-flex items-center gap-1.5 whitespace-nowrap";
+        btnGrouped.className = "px-3.5 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 font-semibold whitespace-nowrap";
         groupedContainer.classList.add('hidden');
         flatContainer.classList.remove('hidden');
         accordionControls.classList.add('hidden');
@@ -1213,6 +1219,28 @@
       } else {
         renderFlatView(currentData);
       }
+    }
+
+    // Helper: Split Thai title (Line 1) and English subtitle (Line 2)
+    function formatSectionTitle(title) {
+      if (!title) return { thai: '', eng: '' };
+      const s = String(title).trim();
+      
+      // Section 1: ชุดอุปกรณ์ระบบศูนย์ควบคุมสถานีแม่ข่าย (Base Station Switching Center)
+      if (s.includes('(Base Station Switching Center)')) {
+        const thai = s.replace('(Base Station Switching Center)', '').trim();
+        return { thai: thai, eng: '(Base Station Switching Center)' };
+      }
+      
+      // Section 2: ชุดอุปกรณ์ระบบบริหารจัดการ Software-Definded WAN (SD-WAN Controller) Network Cabinet
+      if (/Software-Def/i.test(s)) {
+        const idx = s.search(/Software-Def/i);
+        const thai = s.substring(0, idx).trim();
+        const eng = s.substring(idx).trim();
+        return { thai: thai, eng: eng };
+      }
+
+      return { thai: s, eng: '' };
     }
 
     // ==========================================
@@ -1340,34 +1368,43 @@
         const secCard = document.createElement('div');
         secCard.className = "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5 transition-all hover:shadow-md";
 
+        const secTitle = formatSectionTitle(group.title);
+
         secCard.innerHTML = `
           <!-- LEVEL 1: Main Section Header (หัวข้อหลัก) - ดำ น้ำเงิน เงิน -->
           <div 
             onclick="toggleSection('${group.id}')"
             class="p-4 sm:p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-900 text-white flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5 cursor-pointer select-none group/header border-b border-slate-800"
           >
-            <div class="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-              <span class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/40 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 sm:mt-0 shadow-sm">
+            <div class="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
+              <span class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/40 flex items-center justify-center font-bold text-base shrink-0 mt-0.5 sm:mt-0 shadow-sm font-mono">
                 ${group.no}
               </span>
               <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="font-bold text-white text-base sm:text-lg group-hover/header:text-sky-300 transition-colors">
-                    ${group.title}
-                  </h2>
-                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/10 text-slate-200 border border-slate-400/30 shrink-0">
+                <div class="flex flex-wrap items-start sm:items-center gap-2">
+                  <div>
+                    <h2 class="font-bold text-white text-base sm:text-lg group-hover/header:text-sky-300 transition-colors leading-snug">
+                      ${secTitle.thai}
+                    </h2>
+                    ${secTitle.eng ? `
+                      <div class="text-xs sm:text-sm font-normal text-sky-200/90 mt-0.5 tracking-wide">
+                        ${secTitle.eng}
+                      </div>
+                    ` : ''}
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs sm:text-[13px] font-semibold bg-white/10 text-slate-200 border border-slate-400/30 shrink-0 self-start mt-0.5">
                     หัวข้อหลัก
                   </span>
                 </div>
-                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-300 mt-1">
+                <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-300 mt-1">
                   ${matchingSubGroups.length > 0 ? `
                     <span class="text-sky-300 font-medium">
-                      <i class="fa-solid fa-layer-group text-[11px] mr-1 text-sky-400"></i>
+                      <i class="fa-solid fa-layer-group text-xs mr-1 text-sky-400"></i>
                       ${activeSubFilter !== 'ALL' ? `แสดง 1 จาก ${group.subGroups.length} หัวข้อย่อย` : `${displayedSubGroups.length} หัวข้อรอง`} ${totalVilInSec > 0 ? `(${totalVilInSec} หมู่บ้าน)` : ''}
                     </span>
                   ` : ''}
                   <span class="text-slate-300 font-medium">
-                    <i class="fa-solid fa-boxes-stacked text-[11px] mr-1 text-sky-400"></i>
+                    <i class="fa-solid fa-boxes-stacked text-xs mr-1 text-sky-400"></i>
                     รวม ${totalItemsInSec.toLocaleString()} รายการอุปกรณ์
                   </span>
                 </div>
@@ -1377,19 +1414,18 @@
             <!-- Sub-topic Dropdown & Badges -->
             <div class="flex items-center flex-wrap sm:flex-nowrap gap-2.5 self-start lg:self-auto shrink-0" onclick="event.stopPropagation()">
               ${group.subGroups.length > 0 ? `
-                <div class="relative min-w-[210px] sm:min-w-[270px] max-w-[320px]">
+                <div class="relative min-w-[240px] sm:min-w-[300px] max-w-[400px]">
                   <select 
                     id="subFilter-${group.id}" 
                     onchange="handleSubGroupFilter('${group.id}', this.value)" 
                     title="เลือกแสดงเฉพาะหัวข้อย่อยนี้"
-                    class="w-full appearance-none pl-8 pr-8 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-600 hover:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all cursor-pointer shadow-inner"
+                    class="w-full appearance-none pl-8 pr-8 py-1.5 text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl border border-slate-600 hover:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all cursor-pointer shadow-inner"
                   >
                     <option value="ALL" ${activeSubFilter === 'ALL' ? 'selected' : ''}>📂 ทุกหัวข้อย่อย (${group.subGroups.length} หัวข้อ)</option>
                     ${group.subGroups.map(sg => {
                       const isVil = sg.villageUnits && sg.villageUnits.length > 0;
                       const countText = isVil ? `${sg.villageUnits.length} หมู่บ้าน` : `${sg.items.length} รายการ`;
                       let sgTitle = sg.title.replace(/^จังหวัด/, 'จ.').trim();
-                      if (sgTitle.length > 28) sgTitle = sgTitle.substring(0, 26) + '...';
                       return `<option value="${sg.id}" ${activeSubFilter === sg.id ? 'selected' : ''}>${sg.no} ${sgTitle} (${countText})</option>`;
                     }).join('')}
                   </select>
@@ -1398,7 +1434,7 @@
                 </div>
               ` : ''}
 
-              <span class="px-3 py-1 rounded-xl text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-400/30 whitespace-nowrap">
+              <span class="px-3 py-1 rounded-xl text-xs sm:text-sm font-semibold bg-sky-500/15 text-sky-300 border border-sky-400/30 whitespace-nowrap">
                 ${totalItemsInSec.toLocaleString()} รายการ
               </span>
               <button 
@@ -1427,22 +1463,22 @@
                     class="p-3.5 sm:p-4 bg-gradient-to-r from-slate-100 via-slate-50 to-sky-50/30 hover:from-slate-200/70 hover:to-sky-100/50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 cursor-pointer select-none transition-colors"
                   >
                     <div class="flex items-start sm:items-center gap-3">
-                      <span class="w-8 h-8 rounded-lg bg-slate-800 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                      <span class="w-8 h-8 rounded-lg bg-slate-800 text-white font-mono font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm">
                         ${subGroup.no}
                       </span>
                       <div>
                         <div class="flex flex-wrap items-center gap-2">
-                          <h3 class="font-bold text-slate-900 text-sm sm:text-base">
+                          <h3 class="font-bold text-slate-900 text-base sm:text-lg">
                             ${subGroup.title}
                           </h3>
-                          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">
+                          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-800 border border-sky-200">
                             ${hasVillages ? 'จังหวัด / พื้นที่' : 'หัวข้อรอง'}
                           </span>
                         </div>
-                        <div class="text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-2">
+                        <div class="text-xs sm:text-sm text-slate-500 mt-0.5 flex flex-wrap items-center gap-2">
                           ${hasVillages ? `
                             <span class="text-sky-800 font-medium">
-                              <i class="fa-solid fa-house-chimney text-[10px] mr-1 text-sky-600"></i>
+                              <i class="fa-solid fa-house-chimney text-xs mr-1 text-sky-600"></i>
                               <strong>${subGroup.villageUnits.length} หมู่บ้าน</strong>
                             </span>
                             <span class="text-slate-300">•</span>
@@ -1459,7 +1495,7 @@
                       <button 
                         type="button"
                         onclick="event.stopPropagation(); toggleSubGroup('${subGroup.id}')"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
+                        class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
                           isSubExpanded 
                             ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-sky-600/20' 
                             : 'bg-white text-sky-700 border border-sky-300 hover:bg-sky-50'
@@ -1467,7 +1503,7 @@
                       >
                         <i class="fa-solid ${isSubExpanded ? 'fa-eye-slash' : (hasVillages ? 'fa-house-chimney' : 'fa-list-check')}"></i>
                         <span>${isSubExpanded ? (hasVillages ? 'ซ่อนหมู่บ้าน' : 'ซ่อนรายการอุปกรณ์') : (hasVillages ? `แสดงรายชื่อหมู่บ้าน (${subGroup.villageUnits.length} หมู่)` : 'แสดงรายการอุปกรณ์')}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ${isSubExpanded ? 'rotate-180' : ''}"></i>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 ${isSubExpanded ? 'rotate-180' : ''}"></i>
                       </button>
                     </div>
                   </div>
@@ -1477,7 +1513,7 @@
                     ${hasVillages ? `
                       <div class="p-3 sm:p-4 bg-slate-50/50 space-y-3">
                         <!-- Village Toolbar -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 bg-gradient-to-r from-sky-50/80 via-slate-50 to-sky-50/50 rounded-xl border border-sky-200/80 text-xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 bg-gradient-to-r from-sky-50/80 via-slate-50 to-sky-50/50 rounded-xl border border-sky-200/80 text-xs sm:text-sm">
                           <div class="flex items-center gap-2 text-slate-800 font-medium">
                             <i class="fa-solid fa-tree-city text-sky-600 text-sm"></i>
                             <span>รายชื่อหมู่บ้านใน ${subGroup.title}: แสดง <strong>${vilList.length}</strong> จาก ${subGroup.villageUnits.length} หมู่บ้าน</span>
@@ -1486,17 +1522,17 @@
                             <button 
                               type="button" 
                               onclick="toggleAllVillagesInSubGroup('${subGroup.id}', true)" 
-                              class="px-2.5 py-1 rounded-lg bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 text-[11px] font-semibold transition-colors flex items-center gap-1 shadow-xs"
+                              class="px-3 py-1 rounded-lg bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 text-xs sm:text-[13px] font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
                             >
-                              <i class="fa-solid fa-angles-down text-[10px]"></i>
+                              <i class="fa-solid fa-angles-down text-xs"></i>
                               <span>ขยายทุกหมู่</span>
                             </button>
                             <button 
                               type="button" 
                               onclick="toggleAllVillagesInSubGroup('${subGroup.id}', false)" 
-                              class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-[11px] font-semibold transition-colors flex items-center gap-1 shadow-xs"
+                              class="px-3 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs sm:text-[13px] font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
                             >
-                              <i class="fa-solid fa-angles-up text-[10px]"></i>
+                              <i class="fa-solid fa-angles-up text-xs"></i>
                               <span>ยุบทุกหมู่</span>
                             </button>
                           </div>
@@ -1515,18 +1551,18 @@
                                 >
                                   <div class="flex items-start sm:items-center gap-2.5">
                                     <span class="w-7 h-7 rounded-lg bg-sky-600 text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
-                                      <i class="fa-solid fa-house-chimney text-[10px]"></i>
+                                      <i class="fa-solid fa-house-chimney text-xs"></i>
                                     </span>
                                     <div>
                                       <div class="flex flex-wrap items-center gap-2">
-                                        <span class="font-mono text-xs font-bold text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-200">
+                                        <span class="font-mono text-xs sm:text-[13px] font-bold text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-200">
                                           ${vil.no}
                                         </span>
-                                        <h4 class="font-bold text-slate-900 text-xs sm:text-sm">
+                                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">
                                           ${vil.title}
                                         </h4>
                                       </div>
-                                      <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
+                                      <div class="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
                                         <span>อุปกรณ์ในหมู่: <strong class="text-sky-700 font-semibold">${vil.displayedItems.length} รายการ</strong></span>
                                       </div>
                                     </div>
@@ -1537,15 +1573,15 @@
                                     <button 
                                       type="button"
                                       onclick="event.stopPropagation(); toggleVillage('${vil.id}')"
-                                      class="px-3 py-1 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition-all shadow-xs ${
+                                      class="px-3 py-1 rounded-lg text-xs sm:text-[13px] font-semibold inline-flex items-center gap-1.5 transition-all shadow-xs ${
                                         isVilExpanded 
                                           ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-sky-600/20' 
                                           : 'bg-white text-sky-800 border border-sky-300 hover:bg-sky-50'
                                       }"
                                     >
-                                      <i class="fa-solid ${isVilExpanded ? 'fa-eye-slash' : 'fa-list'} text-[10px]"></i>
+                                      <i class="fa-solid ${isVilExpanded ? 'fa-eye-slash' : 'fa-list'} text-xs"></i>
                                       <span>${isVilExpanded ? 'ซ่อนรายละเอียด' : 'กดดูรายละเอียด'}</span>
-                                      <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200 ${isVilExpanded ? 'rotate-180' : ''}"></i>
+                                      <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ${isVilExpanded ? 'rotate-180' : ''}"></i>
                                     </button>
                                   </div>
                                 </div>
@@ -1573,18 +1609,18 @@
                   class="p-3.5 sm:p-4 bg-slate-100 flex items-center justify-between cursor-pointer select-none"
                 >
                   <div class="flex items-center gap-2.5">
-                    <span class="w-7 h-7 rounded-lg bg-slate-800 text-white font-mono font-bold text-xs flex items-center justify-center">
+                    <span class="w-7 h-7 rounded-lg bg-slate-800 text-white font-mono font-bold text-xs sm:text-sm flex items-center justify-center">
                       ${group.no}
                     </span>
                     <div>
-                      <h4 class="font-bold text-slate-800 text-sm">รายการอุปกรณ์ในตู้</h4>
-                      <span class="text-xs text-slate-500">รวม ${displayedDirect.length} รายการ</span>
+                      <h4 class="font-bold text-slate-800 text-base">รายการอุปกรณ์ในตู้</h4>
+                      <span class="text-xs sm:text-sm text-slate-500">รวม ${displayedDirect.length} รายการ</span>
                     </div>
                   </div>
                   <button 
                     type="button"
                     onclick="event.stopPropagation(); toggleDirectItems('${group.id}')"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
+                    class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold inline-flex items-center gap-2 transition-all shadow-sm ${
                       expandedDirectIds.has(group.id) 
                         ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-sky-600/20' 
                         : 'bg-white text-sky-700 border border-sky-300 hover:bg-sky-50'
@@ -1592,7 +1628,7 @@
                   >
                     <i class="fa-solid ${expandedDirectIds.has(group.id) ? 'fa-eye-slash' : 'fa-list-check'}"></i>
                     <span>${expandedDirectIds.has(group.id) ? 'ซ่อนรายการอุปกรณ์' : 'แสดงรายการอุปกรณ์'}</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200 ${expandedDirectIds.has(group.id) ? 'rotate-180' : ''}"></i>
+                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 ${expandedDirectIds.has(group.id) ? 'rotate-180' : ''}"></i>
                   </button>
                 </div>
                 <div id="body-direct-${group.id}" class="${expandedDirectIds.has(group.id) ? '' : 'hidden'} border-t border-slate-100">
@@ -1639,7 +1675,7 @@
     function renderEquipmentTableHtml(items, parentNo) {
       if (!items || items.length === 0) {
         return `
-          <div class="p-4 text-center text-xs text-slate-400 italic">
+          <div class="p-4 text-center text-xs sm:text-sm text-slate-400 italic">
             (ไม่มีรายการอุปกรณ์ย่อยภายใต้ชุดนี้)
           </div>
         `;
@@ -1649,12 +1685,12 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs sm:text-sm border-collapse">
             <thead>
-              <tr class="bg-slate-50/90 text-slate-600 font-semibold border-b border-slate-200/90 text-[11px] uppercase tracking-wider">
+              <tr class="bg-slate-50/90 text-slate-700 font-bold border-b border-slate-200/90 text-xs sm:text-sm tracking-wide">
                 <th class="py-2.5 px-4 text-center w-16">ลำดับ</th>
                 <th class="py-2.5 px-4">รายการอุปกรณ์ย่อย (Component Description)</th>
                 <th class="py-2.5 px-4">ยี่ห้อ (Brand)</th>
-                <th class="py-2.5 px-4">รุ่น (Model)</th>
-                <th class="py-2.5 px-4">หมายเลขเครื่อง (S/N)</th>
+                <th class="py-2.5 px-4 whitespace-nowrap">รุ่น (Model)</th>
+                <th class="py-2.5 px-4 whitespace-nowrap">หมายเลขเครื่อง (S/N)</th>
                 <th class="py-2.5 px-4 text-center">จำนวน</th>
               </tr>
             </thead>
@@ -1664,45 +1700,45 @@
                 const displayNo = it.itemNo || `${parentNo}.${idx + 1}`;
                 return `
                   <tr class="hover:bg-sky-50/40 transition-colors group">
-                    <td class="py-2.5 px-4 text-center font-mono text-xs text-slate-400">
+                    <td class="py-2.5 px-4 text-center font-mono text-xs sm:text-sm text-slate-400">
                       ${displayNo}
                     </td>
                     <td class="py-2.5 px-4">
                       <div class="flex items-center gap-2">
                         <span class="text-sky-500 font-mono text-sm leading-none select-none">↳</span>
-                        <span class="font-semibold text-slate-800 group-hover:text-sky-700 transition-colors">
+                        <span class="font-semibold text-slate-800 group-hover:text-sky-700 text-sm sm:text-[15px] transition-colors">
                           ${it.name}
                         </span>
                       </div>
-                      ${it.category ? `<span class="text-[10px] text-slate-400 ml-5 block">${it.category}</span>` : ''}
+                      ${it.category ? `<span class="text-xs text-slate-400 ml-5 block">${it.category}</span>` : ''}
                     </td>
-                    <td class="py-2.5 px-4 text-slate-600 font-medium">
+                    <td class="py-2.5 px-4 whitespace-nowrap">
                       ${it.brand && it.brand !== '-' ? `
-                        <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                        <span class="inline-flex items-center gap-1 text-xs sm:text-sm px-2.5 py-0.5 rounded bg-slate-100 text-slate-800 font-semibold border border-slate-200 whitespace-nowrap">
                           ${it.brand}
                         </span>
-                      ` : '<span class="text-slate-400">-</span>'}
+                      ` : '<span class="text-slate-400 text-xs sm:text-sm">-</span>'}
                     </td>
-                    <td class="py-2.5 px-4">
+                    <td class="py-2.5 px-4 whitespace-nowrap">
                       ${it.model && it.model !== '-' ? `
-                        <code class="bg-slate-100 text-slate-800 font-mono px-2 py-0.5 rounded border border-slate-200 text-xs">
+                        <span class="bg-slate-100 text-slate-800 font-semibold px-2.5 py-0.5 rounded border border-slate-200 text-xs sm:text-sm inline-block whitespace-nowrap">
                           ${it.model}
-                        </code>
-                      ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
+                        </span>
+                      ` : '<span class="text-slate-400 text-xs sm:text-sm">-</span>'}
                     </td>
-                    <td class="py-2.5 px-4">
+                    <td class="py-2.5 px-4 whitespace-nowrap">
                       ${hasSn ? `
                         <button 
                           onclick="copyToClipboard('${it.sn}')" 
                           title="คลิกเพื่อคัดลอก S/N" 
-                          class="inline-flex items-center gap-1.5 font-mono font-bold text-slate-800 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 px-2.5 py-0.5 rounded-lg border border-slate-200 transition-all text-xs group/btn"
+                          class="inline-flex items-center gap-1.5 font-semibold text-slate-800 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 px-2.5 py-0.5 rounded border border-slate-200 transition-all text-xs sm:text-sm whitespace-nowrap group/btn"
                         >
-                          <span>${it.sn}</span>
-                          <i class="fa-regular fa-copy text-slate-400 group-hover/btn:text-sky-700 text-[10px]"></i>
+                          <span class="whitespace-nowrap">${it.sn}</span>
+                          <i class="fa-regular fa-copy text-slate-400 group-hover/btn:text-sky-700 text-xs"></i>
                         </button>
-                      ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
+                      ` : '<span class="text-slate-400 text-xs sm:text-sm">-</span>'}
                     </td>
-                    <td class="py-2.5 px-4 text-center font-medium text-slate-700">
+                    <td class="py-2.5 px-4 text-center font-bold text-slate-700 text-xs sm:text-sm">
                       ${it.qty || '1'}
                     </td>
                   </tr>
@@ -1853,9 +1889,9 @@
         row.className = isSub ? "bg-slate-50/50 hover:bg-sky-50/40 transition-colors" : (isVil ? "bg-sky-50/30 hover:bg-sky-50/60 transition-colors" : "bg-white hover:bg-slate-50 transition-colors font-medium");
         
         row.innerHTML = `
-          <td class="py-2.5 px-4 text-center font-mono text-xs text-slate-400">${item.no || (index + 1)}</td>
+          <td class="py-2.5 px-4 text-center font-mono text-xs sm:text-sm text-slate-500">${item.no || (index + 1)}</td>
           <td class="py-2.5 px-4">
-            <span class="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-semibold ${
+            <span class="inline-flex items-center text-xs sm:text-[13px] px-2.5 py-0.5 rounded-full border font-semibold ${
               isSub ? 'bg-slate-100 text-slate-700 border-slate-300' : 
               (isVil ? 'bg-sky-50 text-sky-800 border-sky-200' : 'bg-slate-900 text-white border-slate-800')
             }">
@@ -1863,19 +1899,27 @@
             </span>
           </td>
           <td class="py-2.5 px-4">
-            <div class="${isSub ? 'pl-3 flex items-center gap-1.5' : (isVil ? 'font-semibold text-sky-950 flex items-center gap-1.5' : 'font-bold text-slate-900')}">
-              ${isSub ? '<span class="text-sky-500 font-mono">↳</span>' : (isVil ? '<i class="fa-solid fa-house-chimney text-sky-600 text-xs mr-1"></i>' : '')}
+            <div class="${isSub ? 'pl-3 flex items-center gap-1.5' : (isVil ? 'font-semibold text-sky-950 flex items-center gap-1.5' : 'font-bold text-slate-900')} text-sm sm:text-[15px]">
+              ${isSub ? '<span class="text-sky-500 font-mono text-sm">↳</span>' : (isVil ? '<i class="fa-solid fa-house-chimney text-sky-600 text-xs mr-1"></i>' : '')}
               <span>${cleanName}</span>
             </div>
           </td>
-          <td class="py-2.5 px-4 text-slate-600">${item.brand || 'Hytera'}</td>
-          <td class="py-2.5 px-4"><code class="bg-slate-100 px-2 py-0.5 rounded border text-xs font-mono">${item.model || '-'}</code></td>
-          <td class="py-2.5 px-4">
+          <td class="py-2.5 px-4 whitespace-nowrap">
+            <span class="inline-flex items-center gap-1 text-xs sm:text-sm px-2.5 py-0.5 rounded bg-slate-100 text-slate-800 font-semibold border border-slate-200 whitespace-nowrap">
+              ${item.brand || 'Hytera'}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 whitespace-nowrap">
+            <span class="bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded border border-slate-200 text-xs sm:text-sm font-semibold inline-block whitespace-nowrap">
+              ${item.model || '-'}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 whitespace-nowrap">
             ${hasSn ? `
-              <button onclick="copyToClipboard('${item.sn}')" class="font-mono text-xs font-bold text-slate-800 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 px-2 py-0.5 rounded border transition-colors">
+              <button onclick="copyToClipboard('${item.sn}')" class="text-xs sm:text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 px-2.5 py-0.5 rounded border border-slate-200 transition-colors whitespace-nowrap">
                 ${item.sn}
               </button>
-            ` : '<span class="text-slate-400 font-mono text-xs">-</span>'}
+            ` : '<span class="text-slate-400 text-xs sm:text-sm whitespace-nowrap">-</span>'}
           </td>
         `;
         tbody.appendChild(row);
@@ -1911,37 +1955,37 @@
 
       const modalBody = document.getElementById('modalBody');
       modalBody.innerHTML = `
-        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
           <div>
-            <span class="text-xs text-slate-400 block">ยี่ห้อ (Brand)</span>
-            <span class="font-semibold text-slate-800">${item.brand || 'Hytera'}</span>
+            <span class="text-xs sm:text-sm text-slate-500 block">ยี่ห้อ (Brand)</span>
+            <span class="font-semibold text-slate-800 text-sm sm:text-base">${item.brand || 'Hytera'}</span>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block">รุ่น (Model)</span>
-            <span class="font-mono font-semibold text-slate-800 text-xs">${item.model || '-'}</span>
+            <span class="text-xs sm:text-sm text-slate-500 block">รุ่น (Model)</span>
+            <span class="font-mono font-semibold text-slate-800 text-xs sm:text-sm">${item.model || '-'}</span>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block">หมายเลขประจำเครื่อง (S/N)</span>
-            <span class="font-mono font-bold text-sky-700 text-sm">${item.sn || '-'}</span>
+            <span class="text-xs sm:text-sm text-slate-500 block">หมายเลขประจำเครื่อง (S/N)</span>
+            <span class="font-mono font-bold text-sky-700 text-sm sm:text-base">${item.sn || '-'}</span>
           </div>
           <div>
-            <span class="text-xs text-slate-400 block">สถานะอุปกรณ์</span>
-            <span class="inline-flex items-center gap-1 text-xs text-sky-700 font-semibold">
+            <span class="text-xs sm:text-sm text-slate-500 block">สถานะอุปกรณ์</span>
+            <span class="inline-flex items-center gap-1 text-xs sm:text-sm text-sky-700 font-semibold">
               <i class="fa-solid fa-circle-check"></i> ${item.status || 'พร้อมใช้งาน'}
             </span>
           </div>
         </div>
 
         <div class="space-y-1">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">คุณลักษณะเฉพาะ (Specification)</span>
-          <p class="text-xs text-slate-700 bg-white p-3 rounded-lg border border-slate-200 leading-relaxed">
+          <span class="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wider">คุณลักษณะเฉพาะ (Specification)</span>
+          <p class="text-xs sm:text-sm text-slate-700 bg-white p-3.5 rounded-lg border border-slate-200 leading-relaxed">
             ${item.spec || 'อุปกรณ์ในระบบเครือข่ายสื่อสารความถี่ SHF 800MHz ตามข้อกำหนดสัญญา'}
           </p>
         </div>
 
         <div class="space-y-1">
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">ข้อมูลโครงการและผู้รับสัญญา</span>
-          <div class="text-xs text-slate-600 bg-slate-100/70 p-3 rounded-lg border border-slate-200 space-y-1">
+          <span class="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wider">ข้อมูลโครงการและผู้รับสัญญา</span>
+          <div class="text-xs sm:text-sm text-slate-600 bg-slate-100/70 p-3.5 rounded-lg border border-slate-200 space-y-1.5">
             <p><strong>ผู้รับสัญญา:</strong> บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</p>
             <p><strong>สัญญาเลขที่:</strong> 8680228 (ลงวันที่ 23 กรกฎาคม 2568)</p>
             <p><strong>โครงการ:</strong> เพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารความเร็วสูง</p>
