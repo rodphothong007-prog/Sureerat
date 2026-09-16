@@ -640,7 +640,7 @@
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200 shrink-0">แนะนำ</span>
               </div>
               <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                พิมพ์ใบรายการบัญชีครุภัณฑ์ขนาด A4 พร้อมข้อมูลอุปกรณ์ และ S/N (1.1-1.2, 2.1, 3.1-3.8, 4.1-4.8, 5 รายหมู่บ้าน, 6.1-6.2)
+                พิมพ์ใบตรวจรับครุภัณฑ์ขนาด A4 พร้อมข้อมูลอุปกรณ์, S/N และ<strong>ส่วนลงนาม 3 ฝ่าย</strong> (1.1-1.2, 2.1, 3.1-3.8, 4.1-4.8, 5 รายหมู่บ้าน, 6.1-6.2)
               </p>
 
               <!-- Target Selector -->
@@ -2606,8 +2606,7 @@
           html += `<optgroup label="หมวด ${g.no}. ${g.title}">`;
           html += `<option value="SEC_${g.id}" class="font-bold text-sky-800">📑 [พิมพ์ทั้งหมวด] ${g.no}. ${g.title} (${g.subGroups.length} ชุดย่อย)</option>`;
           g.subGroups.forEach(sg => {
-            const count = (sg.items || []).length;
-            html += `<option value="SUB_${sg.id}">&nbsp;&nbsp;&nbsp;&nbsp;📁 ${sg.no} ${sg.title} (${count} รายการ)</option>`;
+            html += `<option value="SUB_${sg.id}">&nbsp;&nbsp;&nbsp;&nbsp;📁 ${sg.no} ${sg.title} (${sg.displayedItems.length} รายการ)</option>`;
           });
           if (g.directItems && g.directItems.length > 0) {
             html += `<option value="DIR_${g.id}">&nbsp;&nbsp;&nbsp;&nbsp;📦 ${g.no} รายการอุปกรณ์ในตู้ (${g.directItems.length} รายการ)</option>`;
@@ -2743,7 +2742,7 @@
         pageInfo: `ชุดอุปกรณ์ลำดับที่ ${data.subGroup.no}`
       });
 
-      const fullDoc = wrapInPrintDocument(`${data.subGroup.no} ${cleanTitle} - ใบรายการบัญชีครุภัณฑ์`, pageHtml);
+      const fullDoc = wrapInPrintDocument(`${data.subGroup.no} ${cleanTitle} - เอกสารบัญชีครุภัณฑ์ (PDF)`, pageHtml);
       executePrint(fullDoc);
     }
 
@@ -2755,7 +2754,7 @@
         return;
       }
 
-      const cleanVilTitle = (data.village.title || '').replace(/#/g, '').trim().replace(/^[\d.]+\s*/, '');
+      const cleanVilTitle = (data.village.title || '').replace(/#/g, '').trim();
       const cleanProvTitle = (data.subGroup.title || '').replace(/#/g, '').trim();
 
       const pageHtml = generateSingleSheetHtml({
@@ -2763,13 +2762,13 @@
         sectionTitle: `${data.section.title} (${cleanProvTitle})`,
         unitNo: data.village.no,
         unitTitle: cleanVilTitle,
-        locationInfo: `${cleanVilTitle} &bull; ${cleanProvTitle}`,
+        locationInfo: `${cleanVilTitle} • ${cleanProvTitle}`,
         items: data.items,
         isVillage: true,
         pageInfo: `จุดติดตั้งประจำหมู่บ้าน ลำดับที่ ${data.village.no}`
       });
 
-      const fullDoc = wrapInPrintDocument(`${data.village.no} ${cleanVilTitle} - ใบรายการบัญชีครุภัณฑ์`, pageHtml);
+      const fullDoc = wrapInPrintDocument(`${data.village.no} ${cleanVilTitle} - เอกสารบัญชีครุภัณฑ์ประจำหมู่บ้าน (PDF)`, pageHtml);
       executePrint(fullDoc);
     }
 
@@ -2785,13 +2784,13 @@
       const totalVils = data.subGroup.villageUnits.length;
 
       const pagesHtml = data.subGroup.villageUnits.map((vil, vIdx) => {
-        const cleanVilTitle = (vil.title || '').replace(/#/g, '').trim().replace(/^[\d.]+\s*/, '');
+        const cleanVilTitle = (vil.title || '').replace(/#/g, '').trim();
         return generateSingleSheetHtml({
           sectionNo: data.section.no,
           sectionTitle: `${data.section.title} (${cleanProvTitle})`,
           unitNo: vil.no,
           unitTitle: cleanVilTitle,
-          locationInfo: `${cleanVilTitle} &bull; ${cleanProvTitle}`,
+          locationInfo: `${cleanVilTitle} • ${cleanProvTitle}`,
           items: vil.items || vil.displayedItems || [],
           isVillage: true,
           pageInfo: `หมู่บ้านที่ ${vIdx + 1}/${totalVils} (${cleanProvTitle})`
@@ -2823,7 +2822,7 @@
         pageInfo: `หมวด ${g.no}. ${cleanSecTitle} (รายการอุปกรณ์ในตู้)`
       });
 
-      const fullDoc = wrapInPrintDocument(`${g.no}. ${cleanSecTitle} - ใบรายการบัญชีครุภัณฑ์`, pageHtml);
+      const fullDoc = wrapInPrintDocument(`${g.no}. ${cleanSecTitle} - รายการอุปกรณ์ในตู้ (PDF)`, pageHtml);
       executePrint(fullDoc);
     }
 
@@ -2849,14 +2848,14 @@
         });
 
         const pagesHtml = allVils.map((item, idx) => {
-          const cleanVilTitle = (item.vil.title || '').replace(/#/g, '').trim().replace(/^[\d.]+\s*/, '');
+          const cleanVilTitle = (item.vil.title || '').replace(/#/g, '').trim();
           const cleanProvTitle = (item.subGroup.title || '').replace(/#/g, '').trim();
           return generateSingleSheetHtml({
             sectionNo: g.no,
             sectionTitle: `${cleanSecTitle} (${cleanProvTitle})`,
             unitNo: item.vil.no,
             unitTitle: cleanVilTitle,
-            locationInfo: `${cleanVilTitle} &bull; ${cleanProvTitle}`,
+            locationInfo: `${cleanVilTitle} • ${cleanProvTitle}`,
             items: item.vil.items || item.vil.displayedItems || [],
             isVillage: true,
             pageInfo: `หมู่บ้านที่ ${idx + 1}/${allVils.length}`
@@ -2881,7 +2880,7 @@
             locationInfo: cleanSgTitle,
             items: sg.items || sg.displayedItems || [],
             isVillage: false,
-            pageInfo: `ชุดที่ ${idx + 1}/${g.subGroups.length} &bull; หมวด ${g.no}`
+            pageInfo: `ชุดที่ ${idx + 1}/${g.subGroups.length} • หมวด ${g.no}`
           }));
         });
       }
@@ -2895,7 +2894,7 @@
           locationInfo: cleanSecTitle,
           items: g.directItems,
           isVillage: false,
-          pageInfo: `รายการอุปกรณ์ในตู้ &bull; หมวด ${g.no}`
+          pageInfo: `รายการอุปกรณ์ในตู้ • หมวด ${g.no}`
         }));
       }
 
@@ -2904,7 +2903,7 @@
         return;
       }
 
-      const fullDoc = wrapInPrintDocument(`${g.no}. ${cleanSecTitle} - ใบรายการบัญชีครุภัณฑ์`, allPages.join(''));
+      const fullDoc = wrapInPrintDocument(`${g.no}. ${cleanSecTitle} - เอกสารตรวจรับประจำหมวด (PDF)`, allPages.join(''));
       executePrint(fullDoc);
     }
 
@@ -2935,68 +2934,118 @@
 
         return `
           <tr>
-            <td class="text-center" style="width: 44px; font-weight: 600; color: #0f172a;">${idx + 1}</td>
+            <td class="text-center" style="width: 44px; color: #475569;">${idx + 1}</td>
             <td style="font-weight: 600; color: #0f172a;">
               ${cleanName}
+              ${it.category && it.category !== unitTitle ? `<div style="font-size: 11px; font-weight: normal; color: #64748b;">${it.category}</div>` : ''}
             </td>
-            <td class="text-center" style="width: 85px; font-weight: 600; color: #0f172a;">
-              ${brandVal}
+            <td class="text-center" style="width: 85px;">
+              ${brandVal !== '-' ? `<span class="badge font-semibold">${brandVal}</span>` : '<span style="color: #94a3b8;">-</span>'}
             </td>
-            <td style="width: 175px; font-weight: 600; color: #0f172a;">
-              ${modelVal}
+            <td style="width: 175px;">
+              ${modelVal !== '-' ? `<span class="badge font-semibold text-slate-800">${modelVal}</span>` : '<span style="color: #94a3b8;">-</span>'}
             </td>
-            <td style="width: 175px; font-weight: 600; color: #0f172a; font-family: inherit;">
-              ${snVal}
+            <td style="width: 175px;">
+              ${snVal !== '-' ? `<span class="badge font-semibold text-slate-900" style="background: #e2e8f0; border-color: #cbd5e1;">${snVal}</span>` : '<span style="color: #94a3b8;">-</span>'}
             </td>
-            <td class="text-center" style="width: 50px; font-weight: 700; color: #0f172a;">${it.qty || '1'}</td>
+            <td class="text-center font-bold" style="width: 50px;">${it.qty || '1'}</td>
           </tr>
         `;
       }).join('');
 
-      const logoEl = document.querySelector('img[src*="forth-logo"]');
-      const logoSrc = (logoEl && logoEl.src) ? logoEl.src : 'forth-logo.png';
-
       return `
         <div class="sheet-page">
-          <!-- Header Table -->
-          <table class="header-table">
-            <tr>
-              <td style="white-space: nowrap; vertical-align: middle;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <img src="${logoSrc}" alt="FORTH Logo" class="logo-img" onerror="this.style.display='none'">
-                  <div>
-                    <div class="company-title">บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</div>
-                    <div class="company-sub">FORTH CORPORATION PUBLIC COMPANY LIMITED</div>
+          <div>
+            <!-- Header Table -->
+            <table class="header-table">
+              <tr>
+                <td style="width: 52%;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="forth-logo.png" alt="FORTH Logo" class="logo-img" onerror="this.style.display='none'">
+                    <div>
+                      <div class="company-title">บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</div>
+                      <div class="company-sub">FORTH CORPORATION PUBLIC COMPANY LIMITED</div>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td style="text-align: right; white-space: nowrap; vertical-align: middle; padding-right: 4px;">
-                <h1 class="doc-main-title">ใบรายการบัญชีครุภัณฑ์</h1>
-              </td>
-            </tr>
-          </table>
+                </td>
+                <td style="width: 48%; text-align: right;">
+                  <h1 class="doc-main-title">ใบรายการบัญชีครุภัณฑ์ (PDF)</h1>
+                  <div class="doc-sub-title">โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสาร (SHF) • สัญญาเลขที่ 8680228</div>
+                </td>
+              </tr>
+            </table>
 
-          <!-- Meta Details Box -->
-          <div class="meta-box">
-            <div class="meta-title">${unitTitle}</div>
+            <!-- Meta Details Box -->
+            <div class="meta-box">
+              <div>
+                <div class="meta-title">
+                  <span class="meta-unit-no">${unitNo}</span>
+                  <span>${unitTitle}</span>
+                </div>
+                <div class="meta-details">
+                  ${sectionTitle ? `<span><strong>หมวดหลัก:</strong> ${sectionTitle}</span> • ` : ''}
+                  ${locationInfo ? `<span><strong>สถานที่ติดตั้ง:</strong> ${locationInfo}</span> • ` : ''}
+                  <span><strong>สถานะ:</strong> ติดตั้งและพร้อมใช้งานตามสัญญา</span>
+                </div>
+              </div>
+              <div class="meta-right">
+                <span class="meta-count-badge">รวม ${items.length} รายการ</span>
+                <div style="font-size: 10.5px; color: #64748b; margin-top: 3px;">พิมพ์เมื่อ: ${printDateStr} น.</div>
+              </div>
+            </div>
+
+            <!-- Equipment Table -->
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="text-center" style="width: 44px;">ลำดับ</th>
+                  <th>รายการอุปกรณ์ (Equipment Description)</th>
+                  <th class="text-center" style="width: 85px;">ยี่ห้อ</th>
+                  <th style="width: 175px;">รุ่น (Model)</th>
+                  <th style="width: 175px;">หมายเลขประจำเครื่อง (S/N)</th>
+                  <th class="text-center" style="width: 50px;">จำนวน</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml || '<tr><td colspan="6" class="text-center" style="padding: 16px; color: #94a3b8;">ไม่มีรายการอุปกรณ์ในชุดนี้</td></tr>'}
+              </tbody>
+            </table>
           </div>
 
-          <!-- Equipment Table -->
-          <table class="data-table">
-            <thead>
+          <!-- Sign-off Section -->
+          <div class="sign-section">
+            <table class="sign-table">
               <tr>
-                <th class="text-center" style="width: 44px;">ลำดับ</th>
-                <th class="text-center">รายการอุปกรณ์ (Equipment Description)</th>
-                <th class="text-center" style="width: 85px;">ยี่ห้อ</th>
-                <th style="width: 175px;">รุ่น (Model)</th>
-                <th style="width: 175px;">หมายเลขประจำเครื่อง (S/N)</th>
-                <th class="text-center" style="width: 50px;">จำนวน</th>
+                <td>
+                  <div class="sign-title">ผู้ส่งมอบงาน / ผู้จัดการโครงการ</div>
+                  <div class="sign-line"></div>
+                  <div class="sign-name">( ............................................................ )</div>
+                  <div class="sign-role">บริษัท ฟอร์ท คอร์ปอเรชั่น จำกัด (มหาชน)</div>
+                  <div class="sign-date">วันที่ ......../......../2568</div>
+                </td>
+                <td>
+                  <div class="sign-title">ผู้ควบคุมงาน / ผู้ตรวจสอบระบบ</div>
+                  <div class="sign-line"></div>
+                  <div class="sign-name">( ............................................................ )</div>
+                  <div class="sign-role">วิศวกรผู้ควบคุมงาน / ผู้ตรวจสอบ</div>
+                  <div class="sign-date">วันที่ ......../......../2568</div>
+                </td>
+                <td>
+                  <div class="sign-title">ผู้รับมอบพัสดุ / เจ้าหน้าที่ประจำพื้นที่</div>
+                  <div class="sign-line"></div>
+                  <div class="sign-name">( ............................................................ )</div>
+                  <div class="sign-role">${isVillage ? 'ตัวแทนหมู่บ้าน / ผู้ดูแลจุดติดตั้ง' : 'เจ้าหน้าที่ผู้มีอำนาจรับมอบ'}</div>
+                  <div class="sign-date">วันที่ ......../......../2568</div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml || '<tr><td colspan="6" class="text-center" style="padding: 16px; color: #94a3b8;">ไม่มีรายการอุปกรณ์ในชุดนี้</td></tr>'}
-            </tbody>
-          </table>
+            </table>
+
+            <!-- Footer Bar -->
+            <div class="footer-bar">
+              <span>โครงการเพิ่มประสิทธิภาพระบบโครงข่ายสื่อสารด้วยอุปกรณ์ทวนสัญญาณผ่านคลื่นความถี่สูง (SHF)</span>
+              <span>${pageInfo ? `${pageInfo} • ` : ''}ระบบสารสนเทศบัญชีครุภัณฑ์ FORTH USO</span>
+            </div>
+          </div>
         </div>
       `;
     }
@@ -3014,7 +3063,7 @@
   <style>
     @page {
       size: A4 portrait;
-      margin: 0;
+      margin: 10mm 12mm 12mm 12mm;
     }
     * {
       box-sizing: border-box;
@@ -3031,10 +3080,13 @@
       padding: 0;
     }
     .sheet-page {
-      padding: 12mm 15mm 12mm 15mm;
-      box-sizing: border-box;
       page-break-after: always;
       break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 270mm;
+      padding-bottom: 5px;
     }
     .sheet-page:last-child {
       page-break-after: auto;
@@ -3061,38 +3113,76 @@
       font-size: 14.5px;
       font-weight: 700;
       color: #0f172a;
-      line-height: 1.25;
-      white-space: nowrap;
+      line-height: 1.2;
     }
     .company-sub {
-      font-size: 10px;
+      font-size: 10.5px;
       color: #64748b;
-      letter-spacing: 0.2px;
-      line-height: 1.25;
-      margin-top: 2px;
-      white-space: nowrap;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+      margin-top: 1px;
     }
     .doc-main-title {
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 800;
       color: #0369a1;
       text-align: right;
       margin: 0;
       line-height: 1.2;
-      white-space: nowrap;
+    }
+    .doc-sub-title {
+      font-size: 11px;
+      color: #475569;
+      text-align: right;
+      margin-top: 2px;
+      line-height: 1.2;
     }
     .meta-box {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-left: 5px solid #0284c7;
       border-radius: 6px;
-      padding: 7px 12px;
+      padding: 7px 10px;
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
     .meta-title {
       font-size: 14px;
       font-weight: 700;
       color: #0f172a;
+    }
+    .meta-unit-no {
+      display: inline-block;
+      background: #0284c7;
+      color: #ffffff;
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .meta-details {
+      font-size: 11.5px;
+      color: #475569;
+      margin-top: 2px;
+    }
+    .meta-right {
+      text-align: right;
+      font-size: 11.5px;
+      color: #334155;
+      white-space: nowrap;
+    }
+    .meta-count-badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 11.5px;
     }
     table.data-table {
       width: 100%;
@@ -3128,6 +3218,59 @@
       border-radius: 3px;
       font-size: 11.5px;
       white-space: nowrap;
+    }
+    .sign-section {
+      margin-top: auto;
+      padding-top: 14px;
+      page-break-inside: avoid;
+    }
+    .sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    .sign-table td {
+      border: none !important;
+      padding: 0 8px;
+      vertical-align: top;
+      width: 33.33%;
+    }
+    .sign-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .sign-line {
+      margin-top: 32px;
+      border-bottom: 1px dotted #64748b;
+      width: 85%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .sign-name {
+      margin-top: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      color: #0f172a;
+    }
+    .sign-role {
+      font-size: 10.5px;
+      color: #64748b;
+      margin-top: 1px;
+    }
+    .sign-date {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+    .footer-bar {
+      margin-top: 10px;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 4px;
+      font-size: 10px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
     }
   </style>
 </head>
